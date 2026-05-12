@@ -14,9 +14,9 @@
 
     <!-- 未选择照片时显示选择按钮 -->
     <view class="camera-area" wx:if="{{!tempFilePath}}" bindtap="takePhoto">
-      <text class="camera-icon">🖼️</text>
-      <text class="camera-text">点击选择照片</text>
-      <text class="camera-sub">请从相册选择微信/支付宝支付凭证</text>
+      <text class="camera-icon">📷</text>
+      <text class="camera-text">拍摄账单详情原图</text>
+      <text class="camera-sub">仅支持现场拍摄“全部账单/账单详情”页面，金额需在5-100元</text>
     </view>
 
     <!-- 已拍照显示预览 -->
@@ -44,8 +44,24 @@
         <text class="field-value {{ocrResult.parsed.product ? '' : 'field-error'}}">{{ocrResult.parsed.product || '未识别'}}</text>
       </view>
       <view class="result-field">
+        <text class="field-label">支付状态</text>
+        <text class="field-value {{ocrResult.parsed.status === '支付成功' ? '' : 'field-error'}}">{{ocrResult.parsed.status || '未识别'}}</text>
+      </view>
+      <view class="result-field">
+        <text class="field-label">支付时间</text>
+        <text class="field-value {{ocrResult.parsed.payTime ? '' : 'field-error'}}">{{ocrResult.parsed.payTime || '未识别'}}</text>
+      </view>
+      <view class="result-field">
+        <text class="field-label">商户</text>
+        <text class="field-value {{ocrResult.parsed.placeName === '学府美食城' ? '' : 'field-error'}}">{{ocrResult.parsed.placeName || '未识别'}}</text>
+      </view>
+      <view class="result-field">
         <text class="field-label">消费金额</text>
-        <text class="field-value {{ocrResult.parsed.amount > 0 ? '' : 'field-error'}}">¥{{ocrResult.parsed.amount || '0.00'}}</text>
+        <text class="field-value {{ocrResult.parsed.amount >= 5 && ocrResult.parsed.amount <= 100 ? '' : 'field-error'}}">¥{{ocrResult.parsed.amount || '0.00'}}</text>
+      </view>
+      <view class="result-field">
+        <text class="field-label">收单机构</text>
+        <text class="field-value {{ocrResult.parsed.acquirer ? '' : 'field-error'}}">{{ocrResult.parsed.acquirer || '未识别'}}</text>
       </view>
 
       <!-- 预计获得积分 -->

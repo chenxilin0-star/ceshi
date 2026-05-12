@@ -76,7 +76,7 @@ Page({
     wx.chooseImage({
       count: 1,
       sizeType: ['compressed'],
-      sourceType: ['album'],
+      sourceType: ['camera'],
       success: function (res) {
         var tempFilePath = res.tempFilePaths[0]
         that.setData({
@@ -155,6 +155,11 @@ Page({
       transactionId: parsed.transactionId,
       product: parsed.product,
       merchant: parsed.merchant,
+      placeName: parsed.placeName,
+      payTime: parsed.payTime,
+      acquirer: parsed.acquirer,
+      isBillDetail: parsed.isBillDetail,
+      tamperSuspicious: parsed.tamperSuspicious,
       imageFileID: this.data.imageFileID
     }).then(function (res) {
       that.setData({ submitting: false })

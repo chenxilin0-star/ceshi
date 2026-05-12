@@ -6,17 +6,29 @@ const _ = db.command
 
 exports.main = async (event, context) => {
   const { OPENID } = cloud.getWXContext()
-  const { amount, transactionId, product, merchant, imageFileID } = event
+  const { amount, transactionId, product, merchant, imageFileID, payTime, acquirer, placeName, isBillDetail, tamperSuspicious } = event
   const normalizedAmount = Number(amount)
   const normalizedTransactionId = String(transactionId || '').trim()
   const normalizedProduct = String(product || '').trim()
   const normalizedMerchant = String(merchant || '').trim()
+  const normalizedPayTime = String(payTime || '').trim()
+  const normalizedAcquirer = String(acquirer || '').trim()
+  const normalizedPlaceName = String(placeName || '').trim()
 
   if (!imageFileID || String(imageFileID).indexOf('/receipts/') === -1) {
     return { code: -2, msg: '缺少有效小票图片' }
   }
-  if (!Number.isFinite(normalizedAmount) || normalizedAmount <= 0 || normalizedAmount > 10000) {
-    return { code: -2, msg: '消费金额必须大于0且不能异常过大' }
+  if (!Number.isFinite(normalizedAmount) || normalizedAmount < 5 || normalizedAmount > 100) {
+    return { code: -2, msg: '消费金额必须在5-100元之间' }
+  }
+  if (isBillDetail !== true) {
+    return { code: -2, msg: '请上传完整的账单详情截图' }
+  }
+  if (tamperSuspicious === true) {
+    return { code: -2, msg: '图片疑似被修改，请上传原始账单截图' }
+  }
+  if (normalizedPlaceName !== '学府美食城') {
+    return { code: -2, msg: '账单商户名称不符合要求' }
   }
   if (!/^\d{28}$/.test(normalizedTransactionId)) {
     return { code: -2, msg: '交易单号格式不正确' }
@@ -24,8 +36,14 @@ exports.main = async (event, context) => {
   if (normalizedProduct !== 'B-8号档口' && normalizedProduct !== 'B-7号档口') {
     return { code: -2, msg: '商品名称不符合要求' }
   }
-  if (normalizedMerchant.indexOf('四川青瑞和餐饮管理有限公司') === -1) {
+  if (normalizedMerchant !== '四川青瑞和餐饮管理有限公司') {
     return { code: -2, msg: '商户信息不符合要求' }
+  }
+  if (normalizedAcquirer !== '拉卡拉支付股份有限公司') {
+    return { code: -2, msg: '收单机构不符合要求' }
+  }
+  if (!/^\d{4}年\d{1,2}月\d{1,2}日\s+\d{1,2}:\d{2}:\d{2}$/.test(normalizedPayTime)) {
+    return { code: -2, msg: '支付时间格式不正确' }
   }
 
   // 1. 查询用户
@@ -37,8 +55,8 @@ exports.main = async (event, context) => {
   const userId = user._id
 
   // 2. 校验金额
-  if (!Number.isFinite(normalizedAmount) || normalizedAmount <= 0) {
-    return { code: -2, msg: '消费金额必须大于0' }
+  if (!Number.isFinite(normalizedAmount) || normalizedAmount < 5 || normalizedAmount > 100) {
+    return { code: -2, msg: '消费金额必须在5-100元之间' }
   }
 
   // 3. 校验交易单号
@@ -86,6 +104,9 @@ exports.main = async (event, context) => {
         transactionId: normalizedTransactionId,
         product: normalizedProduct,
         merchant: normalizedMerchant,
+        placeName: normalizedPlaceName,
+        payTime: normalizedPayTime,
+        acquirer: normalizedAcquirer,
         imageFileID: imageFileID,
         pointsEarned: pointsEarned,
         status: 'approved',
