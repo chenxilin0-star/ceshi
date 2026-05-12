@@ -4,7 +4,8 @@ Page({
   data: {
     coupons: [],
     totalPoints: 0,
-    loading: true
+    loading: true,
+    redeeming: false
   },
 
   onLoad: function () {
@@ -31,11 +32,24 @@ Page({
   },
 
   redeem: function (e) {
+    if (this.data.redeeming) return
     var id = e.currentTarget.dataset.id
-    var points = e.currentTarget.dataset.points
+    var points = parseInt(e.currentTarget.dataset.points, 10) || 0
     var that = this
+    var item = (this.data.coupons || []).find(function (x) { return x._id === id })
 
-    if (this.data.totalPoints < points) return
+    if (!id || !item) {
+      wx.showToast({ title: '优惠券不存在', icon: 'none' })
+      return
+    }
+    if ((item.remainingCount || 0) <= 0) {
+      wx.showToast({ title: '已兑完', icon: 'none' })
+      return
+    }
+    if (this.data.totalPoints < points) {
+      wx.showToast({ title: '积分不足', icon: 'none' })
+      return
+    }
 
     wx.showModal({
       title: '确认兑换',
@@ -49,10 +63,13 @@ Page({
   },
 
   doRedeem: function (templateId) {
+    if (this.data.redeeming) return
     var that = this
+    this.setData({ redeeming: true })
     wx.showLoading({ title: '兑换中...' })
     util.callFunction('redeemCoupon', { templateId: templateId }).then(function (res) {
       wx.hideLoading()
+      that.setData({ redeeming: false })
       if (res.code === 0) {
         wx.showModal({
           title: '兑换成功',
@@ -67,6 +84,7 @@ Page({
       }
     }).catch(function () {
       wx.hideLoading()
+      that.setData({ redeeming: false })
       wx.showToast({ title: '兑换失败，请重试', icon: 'none' })
     })
   },

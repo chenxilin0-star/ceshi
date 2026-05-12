@@ -22,6 +22,7 @@ Page({
   },
 
   doVerify: function () {
+    if (this.data.verifying) return
     var code = this.data.verifyCode.trim()
     if (!code) {
       wx.showToast({ title: '请输入核销码', icon: 'none' })

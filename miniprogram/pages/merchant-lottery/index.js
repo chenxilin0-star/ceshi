@@ -179,6 +179,7 @@ Page({
   },
 
   onSave: function () {
+    if (this.data.saving) return
     var prizes = this.data.prizes
 
     // 构建提交数据，确保 probability 和 points 是数字

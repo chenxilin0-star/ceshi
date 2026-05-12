@@ -3,7 +3,7 @@ const cloud = require('wx-server-sdk')
 const https = require('https')
 cloud.init({ env: cloud.DYNAMIC_CURRENT_ENV })
 
-const ZHIPU_API_KEY = '15be10cfab554afa8c6e236bdabc2fee.KxUVZjDVLoOGcqBs'
+const ZHIPU_API_KEY = process.env.ZHIPU_API_KEY || ''
 
 function postJSON(url, data) {
   return new Promise(function (resolve, reject) {
@@ -44,8 +44,11 @@ function postJSON(url, data) {
 exports.main = async (event, context) => {
   const { fileID } = event
 
-  if (!fileID) {
-    return { code: -1, msg: '请先上传小票' }
+  if (!fileID || String(fileID).indexOf('/receipts/') === -1) {
+    return { code: -1, msg: '请先上传有效小票' }
+  }
+  if (!ZHIPU_API_KEY) {
+    return { code: -2, msg: '识别服务未配置，请在云函数环境变量中设置 ZHIPU_API_KEY' }
   }
 
   try {

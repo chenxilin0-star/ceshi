@@ -13,7 +13,7 @@ App({
       this.globalData.pendingReferrerId = options.query.referrerId
     }
     if (options && options.query && options.query.scene) {
-      this.globalData.pendingScene = decodeURIComponent(options.query.scene)
+      this.globalData.pendingScene = this.safeDecodeScene(options.query.scene)
     }
 
     // 全局静默登录：获取 OPENID，创建/获取用户记录（不弹登录页）
@@ -26,7 +26,7 @@ App({
       this.tryBindReferral()
     }
     if (options && options.query && options.query.scene) {
-      this.globalData.pendingScene = decodeURIComponent(options.query.scene)
+      this.globalData.pendingScene = this.safeDecodeScene(options.query.scene)
     }
   },
 
@@ -44,6 +44,16 @@ App({
       console.error('global login error', err)
       return { code: -1, msg: '登录失败' }
     })
+  },
+
+  // 安全解码小程序码 scene，避免异常编码中断启动流程
+  safeDecodeScene: function (scene) {
+    try {
+      return decodeURIComponent(scene)
+    } catch (e) {
+      console.warn('decode scene failed', e)
+      return scene || ''
+    }
   },
 
   // 尝试绑定推荐关系（登录后、或从分享链接进入时调用）

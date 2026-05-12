@@ -13,8 +13,12 @@ Page({
   },
 
   onLoad: function (options) {
-    if (options.testId) {
+    if (options && options.testId) {
       this.loadTestDetail(options.testId)
+    } else {
+      this.setData({ loading: false })
+      wx.showToast({ title: '缺少测试参数', icon: 'none' })
+      setTimeout(function () { wx.navigateBack() }, 1200)
     }
   },
 
@@ -84,13 +88,26 @@ Page({
   // 提交测试（只传 testId 和 answers，服务端计算分数和结果）
   submitTest: function () {
     var that = this
-    that.setData({ submitting: true })
+    if (that.data.submitting) return
 
     var test = that.data.test
+    var questions = that.data.questions || []
+    var answers = that.data.answers || []
+    if (!test || !test._id || questions.length === 0) {
+      wx.showToast({ title: '测试数据异常', icon: 'none' })
+      return
+    }
+    if (answers.length < questions.length || answers.some(function (a) { return a < 0 })) {
+      wx.showToast({ title: '请完成所有题目', icon: 'none' })
+      that.setData({ transitioning: false })
+      return
+    }
+
+    that.setData({ submitting: true })
 
     util.callFunction('submitTest', {
       testId: test._id,
-      answers: that.data.answers
+      answers: answers
     }).then(function (res) {
       that.setData({ submitting: false })
       if (res.code === 0) {

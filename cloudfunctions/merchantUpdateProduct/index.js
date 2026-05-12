@@ -1,7 +1,10 @@
 const cloud = require('wx-server-sdk')
 cloud.init({ env: cloud.DYNAMIC_CURRENT_ENV })
 const db = cloud.database()
-const _ = db.command
+
+function isPositiveInteger(value) {
+  return /^\d+$/.test(String(value)) && parseInt(value, 10) > 0
+}
 
 exports.main = async (event, context) => {
   const { productId, name, image, requiredPoints, totalCount } = event
@@ -30,19 +33,35 @@ exports.main = async (event, context) => {
     }
 
     if (name !== undefined) {
-      updateData.name = name
+      if (!name || name.trim() === '') {
+        return { code: -1, msg: '商品名称不能为空' }
+      }
+      updateData.name = name.trim()
     }
     if (image !== undefined) {
+      if (!image) {
+        return { code: -1, msg: '请上传商品图片' }
+      }
       updateData.image = image
     }
     if (requiredPoints !== undefined) {
-      updateData.requiredPoints = requiredPoints
+      if (!isPositiveInteger(requiredPoints)) {
+        return { code: -1, msg: '所需积分必须为正整数' }
+      }
+      updateData.requiredPoints = parseInt(requiredPoints, 10)
     }
     if (totalCount !== undefined) {
-      updateData.totalCount = totalCount
-      // 重新计算剩余数量：新的总数 - 已兑换数量
-      const usedCount = product.totalCount - product.remainingCount
-      updateData.remainingCount = totalCount - usedCount
+      if (!isPositiveInteger(totalCount)) {
+        return { code: -1, msg: '商品总数必须为正整数' }
+      }
+      var nextTotalCount = parseInt(totalCount, 10)
+      // 重新计算剩余数量：新的总数 - 已兑换数量，不能小于已兑换数量
+      const usedCount = (product.totalCount || 0) - (product.remainingCount || 0)
+      if (nextTotalCount < usedCount) {
+        return { code: -1, msg: '商品总数不能小于已兑换数量' }
+      }
+      updateData.totalCount = nextTotalCount
+      updateData.remainingCount = nextTotalCount - usedCount
     }
 
     await db.collection('products').doc(productId).update({

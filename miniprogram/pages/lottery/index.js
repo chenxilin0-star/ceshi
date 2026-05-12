@@ -196,7 +196,7 @@ Page({
       var remainFree = freeUsed >= 1 ? 0 : 1
       var remainShare = Math.max(0, 2 - shareUsed)
       var remainRetry = (hasRetry && retryUsed === 0) ? 1 : 0
-      var total = remainFree + remainRetry
+      var total = remainFree + remainShare + remainRetry
 
       that.setData({
         remainChances: { free: remainFree, share: remainShare, retry: remainRetry },
@@ -291,7 +291,7 @@ Page({
           showResult: true,
           resultPrize: prize,
           remainChances: res.remainChances,
-          totalChances: res.remainChances.free + res.remainChances.retry
+          totalChances: res.remainChances.free + res.remainChances.share + res.remainChances.retry
         })
       }, 4200)
     }).catch(function () {

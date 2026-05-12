@@ -1,5 +1,9 @@
 var util = require('../../utils/util.js')
 
+function isPositiveInteger(value) {
+  return /^\d+$/.test(String(value || '')) && parseInt(value, 10) > 0
+}
+
 Page({
   data: {
     isEdit: false,
@@ -55,7 +59,7 @@ Page({
   },
 
   checkCanSubmit: function () {
-    var can = this.data.name && this.data.image && parseFloat(this.data.requiredPoints) > 0 && parseInt(this.data.totalCount) > 0 && !this.data.submitting
+    var can = this.data.name && this.data.image && isPositiveInteger(this.data.requiredPoints) && isPositiveInteger(this.data.totalCount) && !this.data.submitting
     this.setData({ canSubmit: can })
   },
 
@@ -87,14 +91,19 @@ Page({
   submit: function () {
     if (!this.data.canSubmit || this.data.submitting) return
 
+    if (!isPositiveInteger(this.data.requiredPoints) || !isPositiveInteger(this.data.totalCount)) {
+      wx.showToast({ title: '积分和库存必须为正整数', icon: 'none' })
+      return
+    }
+
     var that = this
     this.setData({ submitting: true })
 
     var params = {
       name: this.data.name,
       image: this.data.image,
-      requiredPoints: parseInt(this.data.requiredPoints),
-      totalCount: parseInt(this.data.totalCount)
+      requiredPoints: parseInt(this.data.requiredPoints, 10),
+      totalCount: parseInt(this.data.totalCount, 10)
     }
 
     var funcName = this.data.isEdit ? 'merchantUpdateProduct' : 'merchantUploadProduct'
