@@ -34,8 +34,23 @@
 
     <!-- Analysis card -->
     <view class="analysis-card">
-      <text class="analysis-title">结果分析</text>
+      <view class="card-title-row">
+        <text class="analysis-title">结果说明</text>
+        <text class="analysis-chip">校园娱乐参考</text>
+      </view>
       <text class="analysis-text">{{result.resultDesc}}</text>
+    </view>
+
+    <view class="suggestion-card">
+      <text class="suggestion-icon">💡</text>
+      <view class="suggestion-copy">
+        <text class="suggestion-title">给今天的小建议</text>
+        <text class="suggestion-text">{{result.resultSuggestion}}</text>
+      </view>
+    </view>
+
+    <view class="disclaimer-card">
+      <text>本结果仅用于校园娱乐和生活参考，不代表专业测评结论。</text>
     </view>
 
     <!-- Actions -->

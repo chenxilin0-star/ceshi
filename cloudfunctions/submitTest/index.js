@@ -2,6 +2,38 @@ const cloud = require('wx-server-sdk')
 cloud.init({ env: cloud.DYNAMIC_CURRENT_ENV })
 const db = cloud.database()
 
+function getFallbackTitle(test) {
+  var category = (test && test.category) || ''
+  if (category.indexOf('干饭') >= 0 || category.indexOf('消费') >= 0) return '今日干饭能量已生成'
+  if (category.indexOf('社交') >= 0 || category.indexOf('朋友') >= 0) return '你的校园搭子属性已生成'
+  if (category.indexOf('人设') >= 0 || category.indexOf('性格') >= 0) return '你的校园隐藏人设已生成'
+  if (category.indexOf('状态') >= 0 || category.indexOf('情绪') >= 0) return '你的今日校园状态已生成'
+  return '你的校园趣测结果已生成'
+}
+
+function buildResultDescription(test, resultTitle, score, questionCount) {
+  var title = resultTitle || getFallbackTitle(test)
+  var testTitle = (test && test.title) || '本次测试'
+  var category = (test && test.category) || '校园趣测'
+  var countText = questionCount ? ('你刚刚完成了 ' + questionCount + ' 道题，') : ''
+  var base = countText + '系统根据你的选择生成了「' + title + '」。'
+  var scene = '这份结果更像是一张校园状态卡，适合当作今天的轻松参考，不代表固定标签。'
+
+  if (category.indexOf('干饭') >= 0 || category.indexOf('消费') >= 0) {
+    scene = '今天可以先给自己补一点能量，再去处理那些不太想面对的小任务。'
+  } else if (category.indexOf('社交') >= 0 || category.indexOf('朋友') >= 0) {
+    scene = '你在人群里的角色不一定总是外放，但总有一种方式能让朋友感受到你的存在。'
+  } else if (category.indexOf('摆烂') >= 0 || category.indexOf('回血') >= 0 || category.indexOf('情绪') >= 0) {
+    scene = '如果今天电量不高，就先完成一个很小的动作；能动起来一点点，也算回血成功。'
+  } else if (category.indexOf('人设') >= 0 || category.indexOf('性格') >= 0) {
+    scene = '这个人设不是给你下定义，而是把你在校园里的某个可爱侧面放大了一下。'
+  } else if (category.indexOf('状态') >= 0 || testTitle.indexOf('今日') >= 0) {
+    scene = '今天不用强迫自己满格在线，找到适合自己的节奏就已经很不错。'
+  }
+
+  return base + scene + ' 本内容仅作校园娱乐参考。'
+}
+
 exports.main = async (event, context) => {
   try {
     const { OPENID } = cloud.getWXContext()
@@ -99,10 +131,14 @@ exports.main = async (event, context) => {
       }
     }
 
-    // 如果没有匹配到任何规则，给一个默认结果
+    // 如果没有匹配到任何规则，给一个默认结果；如果规则缺说明，也补齐友好说明
     if (!resultTitle) {
-      resultTitle = '测试完成'
-      resultDesc = '感谢你的参与，你已完成本次测试。'
+      resultTitle = getFallbackTitle(test)
+    }
+    if (!resultDesc) {
+      resultDesc = buildResultDescription(test, resultTitle, score, questions.length)
+    }
+    if (!resultEmoji) {
       resultEmoji = '🌟'
     }
 
@@ -127,6 +163,7 @@ exports.main = async (event, context) => {
         resultDesc: resultDesc,
         resultEmoji: resultEmoji,
         scoringType: scoringType,
+        questionCount: questions.length,
         createTime: now
       }
     })
@@ -137,7 +174,8 @@ exports.main = async (event, context) => {
       score: score,
       resultTitle: resultTitle,
       resultDesc: resultDesc,
-      resultEmoji: resultEmoji
+      resultEmoji: resultEmoji,
+      questionCount: questions.length
     }
   } catch (err) {
     return {

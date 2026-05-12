@@ -119,7 +119,7 @@ Page({
           resultTitle: res.resultTitle,
           resultDesc: res.resultDesc,
           resultEmoji: res.resultEmoji || '',
-          questionCount: that.data.questions.length,
+          questionCount: res.questionCount || that.data.questions.length,
           createTime: new Date().toISOString()
         }
         wx.redirectTo({
