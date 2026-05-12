@@ -1,0 +1,92 @@
+/* ============================================
+   Merchant Product Edit - Dreamy Candy Style
+   梦幻糖果风 · 商品编辑
+   ============================================ */
+
+/* --- Page Container --- */
+.page-product-edit {
+  min-height: 100vh;
+  background: var(--color-bg-page);
+  padding: 32rpx;
+  padding-bottom: 120rpx;
+}
+
+/* --- Form Section Card --- */
+.form-section {
+  background: #FFFFFF;
+  border-radius: 28rpx;
+  padding: 32rpx;
+  box-shadow: 0 6rpx 24rpx rgba(255, 126, 179, 0.08),
+              0 2rpx 8rpx rgba(179, 136, 255, 0.04);
+  border: 1rpx solid rgba(255, 126, 179, 0.06);
+  margin-bottom: 32rpx;
+}
+
+.form-title {
+  font-size: 30rpx;
+  font-weight: 600;
+  color: var(--color-text-primary);
+  display: block;
+  margin-bottom: 20rpx;
+}
+
+/* --- Upload Area --- */
+.upload-area {
+  width: 100%;
+  height: 360rpx;
+  border-radius: 20rpx;
+  overflow: hidden;
+  margin-bottom: 32rpx;
+  background: var(--color-border-light);
+  border: 2rpx dashed var(--color-border);
+  position: relative;
+}
+
+.upload-preview {
+  width: 100%;
+  height: 100%;
+}
+
+.upload-placeholder {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.upload-icon {
+  font-size: 64rpx;
+  margin-bottom: 16rpx;
+  color: var(--color-text-quaternary);
+}
+
+.upload-text {
+  font-size: 28rpx;
+  color: var(--color-text-tertiary);
+}
+
+/* --- Form Groups --- */
+.form-group {
+  margin-bottom: 32rpx;
+}
+
+.form-group:last-child {
+  margin-bottom: 0;
+}
+
+.form-label {
+  font-size: 28rpx;
+  color: var(--color-text-secondary);
+  display: block;
+  margin-bottom: 12rpx;
+  font-weight: 500;
+}
+
+/* --- Submit Button --- */
+.page-product-edit .btn-primary {
+  margin-top: 48rpx;
+  box-shadow: 0 8rpx 28rpx rgba(255, 126, 179, 0.35),
+              0 0 40rpx rgba(255, 126, 179, 0.1);
+}

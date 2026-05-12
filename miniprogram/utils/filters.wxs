@@ -1,0 +1,18 @@
+var FIX = '0123456789'
+
+function formatPoints(val) {
+  if (val === null || val === undefined || val === '') return '0.0'
+  var num = parseFloat(val)
+  if (isNaN(num)) return '0.0'
+  var rounded = Math.floor(num * 10) / 10
+  var str = '' + rounded
+  var dotIndex = str.indexOf('.')
+  if (dotIndex === -1) return str + '.0'
+  var decimals = str.substring(dotIndex + 1)
+  if (decimals.length >= 1) return str.substring(0, dotIndex + 1) + decimals.charAt(0)
+  return str + '0'
+}
+
+module.exports = {
+  formatPoints: formatPoints
+}

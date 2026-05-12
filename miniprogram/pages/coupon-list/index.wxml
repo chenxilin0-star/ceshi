@@ -1,0 +1,29 @@
+<view class="page-coupon-list">
+  <!-- Points bar -->
+  <view class="points-bar">
+    <text class="label">当前可用积分</text>
+    <text class="value">{{totalPoints}}</text>
+  </view>
+
+  <!-- Coupon cards -->
+  <view class="coupon-list" wx:if="{{coupons.length > 0}}">
+    <view class="coupon-card" wx:for="{{coupons}}" wx:key="_id">
+      <text class="name">{{item.name}}</text>
+      <text class="desc">{{item.description}}</text>
+      <view class="meta">
+        <view class="tag tag-orange">需 {{item.requiredPoints}} 积分</view>
+        <text class="value">面值 ¥{{item.faceValue}}</text>
+        <text class="value">剩余 {{item.remainingCount}} 张</text>
+      </view>
+      <view class="btn-primary {{totalPoints >= item.requiredPoints && item.remainingCount > 0 ? '' : 'disabled'}}" bindtap="redeem" data-id="{{item._id}}" data-points="{{item.requiredPoints}}">
+        {{totalPoints >= item.requiredPoints ? (item.remainingCount > 0 ? '立即兑换' : '已兑完') : '积分不足，还需' + (item.requiredPoints - totalPoints) + '分'}}
+      </view>
+    </view>
+  </view>
+
+  <!-- Empty state -->
+  <view class="empty-state" wx:if="{{coupons.length === 0 && !loading}}">
+    <text class="emoji">🎫</text>
+    <text class="text">暂无可兑换的优惠券</text>
+  </view>
+</view>

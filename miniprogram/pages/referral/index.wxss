@@ -1,0 +1,183 @@
+/* ========================================
+   Referral / Distribution - Dreamy Candy Theme
+   Stats cards, share button with glow,
+   referral lists with soft pink shadows
+   ======================================== */
+
+/* ========== Page Container ========== */
+.page-referral {
+  min-height: 100vh;
+  background: var(--color-bg-page);
+  padding-bottom: 120rpx;
+}
+
+/* ========== Stats Grid ========== */
+.stats-grid {
+  display: flex;
+  gap: 24rpx;
+  padding: 32rpx;
+}
+
+/* Default stat card - white with dreamy shadow */
+.stat-card {
+  flex: 1;
+  background: #FFFFFF;
+  border-radius: var(--radius-lg);
+  padding: 40rpx 32rpx;
+  text-align: center;
+  box-shadow: var(--shadow-card);
+  border: 1rpx solid rgba(255, 126, 179, 0.06);
+  transition: transform 0.2s ease;
+}
+
+/* Accent stat card - lilac gradient background, white text */
+.stat-card-accent {
+  background: var(--gradient-lilac);
+  color: #FFFFFF;
+  border: none;
+  box-shadow: 0 8rpx 28rpx rgba(212, 168, 255, 0.25);
+}
+
+.stat-card .value {
+  font-size: 56rpx;
+  font-weight: var(--weight-bold);
+  display: block;
+  letter-spacing: -1rpx;
+}
+
+.stat-card .label {
+  font-size: 24rpx;
+  margin-top: 12rpx;
+  opacity: 0.7;
+  display: block;
+}
+
+/* ========== Rules Card ========== */
+/* .rules-card inherits from global .card class (white bg, rounded, shadow) */
+.rules-card {
+  margin: 0 32rpx 32rpx;
+}
+
+.rules-title {
+  font-size: 30rpx;
+  font-weight: var(--weight-medium);
+  color: var(--color-text-primary);
+  display: block;
+  margin-bottom: 12rpx;
+}
+
+.rules-text {
+  font-size: 26rpx;
+  color: var(--color-text-secondary);
+  display: block;
+  line-height: var(--line-height-loose);
+}
+
+/* ========== Share Button ========== */
+.share-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 32rpx;
+  padding: 32rpx;
+  background: var(--gradient-primary) !important;
+  border-radius: var(--radius-lg);
+  color: #FFFFFF !important;
+  text-align: center;
+  font-size: 32rpx;
+  font-weight: var(--weight-medium);
+  box-shadow: 0 8rpx 32rpx rgba(255, 126, 179, 0.35);
+  border: none;
+  line-height: 1.5;
+  letter-spacing: 2rpx;
+  transition: all 0.2s ease;
+}
+
+/* Remove default button border in WeChat */
+.share-btn::after {
+  border: none;
+}
+
+.share-btn:active {
+  transform: scale(0.98);
+  opacity: 0.9;
+}
+
+/* ========== Referral List ========== */
+.referral-list,
+.points-list {
+  margin-top: 16rpx;
+}
+
+/* Referral item - soft card with icon */
+.referral-item {
+  display: flex;
+  align-items: center;
+  padding: 24rpx 32rpx;
+  background: #FFFFFF;
+  border-radius: var(--radius-md);
+  margin-bottom: 12rpx;
+  box-shadow: var(--shadow-card);
+  border: 1rpx solid rgba(255, 126, 179, 0.04);
+  transition: transform 0.15s ease;
+}
+
+.referral-item .icon {
+  font-size: 40rpx;
+  margin-right: 24rpx;
+  flex-shrink: 0;
+}
+
+.referral-item .info {
+  flex: 1;
+  min-width: 0;
+}
+
+.referral-item .name {
+  font-size: 28rpx;
+  color: var(--color-text-primary);
+  display: block;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.referral-item .time {
+  font-size: 22rpx;
+  color: var(--color-text-tertiary);
+  flex-shrink: 0;
+}
+
+/* ========== Points Record Item ========== */
+.record-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 24rpx 32rpx;
+  background: #FFFFFF;
+  border-radius: var(--radius-md);
+  margin-bottom: 12rpx;
+  box-shadow: var(--shadow-card);
+  border: 1rpx solid rgba(255, 126, 179, 0.04);
+}
+
+/* Points change in success green */
+.record-item .change {
+  font-size: 32rpx;
+  font-weight: var(--weight-medium);
+  color: var(--color-success);
+  flex-shrink: 0;
+}
+
+.record-item .detail {
+  font-size: 26rpx;
+  color: var(--color-text-secondary);
+  flex: 1;
+  text-align: center;
+}
+
+.record-item .time {
+  font-size: 22rpx;
+  color: var(--color-text-tertiary);
+  flex-shrink: 0;
+}

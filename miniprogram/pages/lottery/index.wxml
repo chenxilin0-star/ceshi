@@ -1,0 +1,70 @@
+<view class="page-lottery">
+  <!-- 顶部信息 -->
+  <view class="lottery-header">
+    <text class="header-title">幸运转盘</text>
+    <text class="header-sub">每日1次免费抽奖，分享可获得额外机会</text>
+  </view>
+
+  <!-- 转盘 -->
+  <view class="wheel-container">
+    <view class="wheel-pointer">▼</view>
+    <view class="wheel-outer">
+      <view class="wheel-spin" style="transform: rotate({{wheelRotation}}deg);">
+        <!-- canvas 画完后转成图片显示，图片不会遮挡弹窗 -->
+        <image wx:if="{{wheelImage}}" src="{{wheelImage}}" class="wheel-image" mode="aspectFill" />
+        <!-- 隐藏的 canvas，仅用于绘制 -->
+        <canvas type="2d" id="wheelCanvas" class="wheel-canvas-hide"></canvas>
+      </view>
+    </view>
+  </view>
+
+  <!-- 抽奖按钮 -->
+  <view class="spin-section">
+    <view class="spin-btn {{totalChances > 0 && !spinning ? '' : 'disabled'}}" bindtap="onSpin">
+      {{spinning ? '抽奖中...' : totalChances > 0 ? '立即抽奖' : '今日次数已用完'}}
+    </view>
+    <view class="chances-info">
+      <text class="chances-text">剩余 {{totalChances}} 次机会</text>
+    </view>
+  </view>
+
+  <!-- 规则 -->
+  <view class="rules-section">
+    <text class="rules-title">抽奖规则</text>
+    <text class="rules-item">• 每日1次免费抽奖机会</text>
+    <text class="rules-item">• 每次分享获得1次额外机会，每日最多2次</text>
+    <text class="rules-item">• 中奖积分即时到账</text>
+    <text class="rules-item">• 中奖实物请在"我的兑换"中查看</text>
+  </view>
+
+  <!-- 分享按钮 -->
+  <view class="share-section">
+    <button class="share-btn" open-type="share">
+      分享给好友 获取抽奖机会
+    </button>
+  </view>
+
+  <!-- 结果弹窗 -->
+  <view class="result-mask" wx:if="{{showResult}}" bindtap="closeResult">
+    <view class="result-card" catchtap="">
+      <text class="result-icon" wx:if="{{resultPrize.type === 'points'}}">🎉</text>
+      <text class="result-icon" wx:if="{{resultPrize.type === 'retry'}}">🔄</text>
+      <text class="result-icon" wx:if="{{resultPrize.type === 'product'}}">🎁</text>
+      <text class="result-icon" wx:if="{{resultPrize.type === 'none'}}">😊</text>
+
+      <text class="result-title" wx:if="{{resultPrize.type === 'points'}}">恭喜中奖！</text>
+      <text class="result-title" wx:if="{{resultPrize.type === 'retry'}}">再来一次！</text>
+      <text class="result-title" wx:if="{{resultPrize.type === 'product'}}">恭喜获得实物奖品！</text>
+      <text class="result-title" wx:if="{{resultPrize.type === 'none'}}">谢谢参与</text>
+
+      <text class="result-prize">{{resultPrize.name}}</text>
+      <text class="result-points" wx:if="{{resultPrize.type === 'points' && resultPrize.points > 0}}">+{{resultPrize.points}}积分已到账</text>
+      <text class="result-points" wx:if="{{resultPrize.type === 'product'}}">请到"我的兑换"查看奖品并出示二维码核销</text>
+
+      <view class="result-actions">
+        <view class="result-btn result-btn-retry" wx:if="{{resultPrize.type === 'retry' && remainChances.retry > 0}}" bindtap="onRetry">再抽一次</view>
+        <view class="result-btn" bindtap="closeResult">知道了</view>
+      </view>
+    </view>
+  </view>
+</view>

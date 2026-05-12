@@ -1,0 +1,22 @@
+<view class="page-verify">
+  <view class="verify-card">
+    <text class="card-title">输入核销码</text>
+    <view class="input-row">
+      <input class="code-input" value="{{verifyCode}}" bindinput="onCodeInput" placeholder="请输入8位核销码" maxlength="8" />
+      <view class="btn-scan" bindtap="scanCode">
+        <text>扫码</text>
+      </view>
+    </view>
+
+    <view class="btn-primary {{verifyCode ? '' : 'disabled'}}" bindtap="doVerify">
+      {{verifying ? '核销中...' : '确认核销'}}
+    </view>
+  </view>
+
+  <!-- Result display -->
+  <view class="result-card {{result.success ? 'success' : 'fail'}}" wx:if="{{result}}">
+    <text class="result-icon">{{result.success ? '✓' : '✗'}}</text>
+    <text class="result-msg">{{result.msg}}</text>
+    <text class="result-product" wx:if="{{result.success}}">商品：{{result.productName}}</text>
+  </view>
+</view>

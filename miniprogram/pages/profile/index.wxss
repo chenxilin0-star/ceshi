@@ -1,0 +1,148 @@
+/* ========================================
+   Profile - Dreamy Candy Theme
+   Lilac gradient header, peach avatar glow,
+   floating stats card overlap, soft menu list
+   ======================================== */
+
+/* ========== Page Container ========== */
+.page-profile {
+  min-height: 100vh;
+  background: var(--color-bg-page);
+  padding-bottom: 120rpx;
+}
+
+/* ========== Profile Header ========== */
+/* Lilac gradient background with rounded bottom corners */
+.profile-header {
+  display: flex;
+  align-items: center;
+  padding: 48rpx 32rpx 80rpx;
+  background: var(--gradient-lilac);
+  border-radius: 0 0 48rpx 48rpx;
+  color: #FFFFFF;
+  position: relative;
+}
+
+/* Avatar circle with peach gradient background and frosted border */
+.avatar {
+  width: 120rpx;
+  height: 120rpx;
+  border-radius: 50%;
+  background: var(--gradient-peach);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-right: 32rpx;
+  border: 4rpx solid rgba(255, 255, 255, 0.5);
+  box-shadow: 0 4rpx 16rpx rgba(255, 126, 179, 0.2);
+  flex-shrink: 0;
+}
+
+.avatar-emoji {
+  font-size: 60rpx;
+}
+
+/* User name - white text on dark gradient header */
+.name {
+  font-size: 36rpx;
+  font-weight: var(--weight-medium);
+  color: #FFFFFF;
+  display: block;
+  text-shadow: 0 2rpx 8rpx rgba(0, 0, 0, 0.1);
+}
+
+/* ========== Stats Row ========== */
+/* Overlaps the header with negative margin, floating above via z-index */
+.stats-row {
+  display: flex;
+  justify-content: space-around;
+  padding: 32rpx;
+  margin: -48rpx 32rpx 32rpx;
+  background: #FFFFFF;
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-float);
+  border: 1rpx solid rgba(255, 255, 255, 0.8);
+  position: relative;
+  z-index: 2;
+}
+
+.stats-item {
+  text-align: center;
+}
+
+.stats-value {
+  font-size: 48rpx;
+  font-weight: var(--weight-bold);
+  color: var(--color-text-primary);
+  display: block;
+  letter-spacing: -1rpx;
+}
+
+.stats-label {
+  font-size: 24rpx;
+  color: var(--color-text-tertiary);
+  margin-top: 8rpx;
+  display: block;
+}
+
+/* ========== Menu List ========== */
+.menu-list {
+  background: #FFFFFF;
+  border-radius: var(--radius-lg);
+  margin: 0 32rpx;
+  overflow: hidden;
+  box-shadow: var(--shadow-card);
+  border: 1rpx solid rgba(255, 126, 179, 0.06);
+}
+
+.menu-item {
+  display: flex;
+  align-items: center;
+  padding: 32rpx;
+  border-bottom: 1rpx solid var(--color-border-light);
+  transition: background 0.15s ease;
+}
+
+.menu-item:last-child {
+  border-bottom: none;
+}
+
+.menu-item:active {
+  background: var(--color-bg-hover);
+}
+
+.menu-item .icon {
+  font-size: 40rpx;
+  margin-right: 24rpx;
+  flex-shrink: 0;
+}
+
+.menu-item .title {
+  flex: 1;
+  font-size: 30rpx;
+  color: var(--color-text-primary);
+}
+
+.menu-item .arrow {
+  color: var(--color-text-quaternary);
+  font-size: 28rpx;
+  flex-shrink: 0;
+}
+
+/* ========== Logout Button ========== */
+.logout-btn {
+  margin: 48rpx 32rpx;
+  padding: 24rpx;
+  text-align: center;
+  font-size: 28rpx;
+  color: var(--color-text-tertiary);
+  background: #FFFFFF;
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-card);
+  border: 1rpx solid rgba(255, 126, 179, 0.06);
+  transition: all 0.15s ease;
+}
+
+.logout-btn:active {
+  background: var(--color-bg-hover);
+}

@@ -1,0 +1,38 @@
+[
+  {
+    "_id": "product_demo_1",
+    "name": "精选咖啡兑换券",
+    "image": "",
+    "requiredPoints": 20,
+    "totalCount": 50,
+    "remainingCount": 50,
+    "status": "active",
+    "createdBy": "",
+    "createTime": "2025-01-01T00:00:00.000Z",
+    "updateTime": "2025-01-01T00:00:00.000Z"
+  },
+  {
+    "_id": "product_demo_2",
+    "name": "精美马克杯",
+    "image": "",
+    "requiredPoints": 50,
+    "totalCount": 30,
+    "remainingCount": 30,
+    "status": "active",
+    "createdBy": "",
+    "createTime": "2025-01-01T00:00:00.000Z",
+    "updateTime": "2025-01-01T00:00:00.000Z"
+  },
+  {
+    "_id": "product_demo_3",
+    "name": "限定版帆布袋",
+    "image": "",
+    "requiredPoints": 100,
+    "totalCount": 20,
+    "remainingCount": 20,
+    "status": "active",
+    "createdBy": "",
+    "createTime": "2025-01-01T00:00:00.000Z",
+    "updateTime": "2025-01-01T00:00:00.000Z"
+  }
+]

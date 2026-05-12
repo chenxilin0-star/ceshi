@@ -1,0 +1,63 @@
+{
+  "pages": [
+    "pages/index/index",
+    "pages/login/index",
+    "pages/lottery/index",
+"pages/points/index",
+    "pages/test-detail/index",
+    "pages/test-result/index",
+    "pages/product-list/index",
+    "pages/my-products/index",
+    "pages/referral/index",
+    "pages/profile/index",
+    "pages/merchant-home/index",
+    "pages/merchant-products/index",
+    "pages/merchant-product-edit/index",
+    "pages/merchant-verify/index",
+    "pages/merchant-verify-log/index",
+    "pages/coupon-list/index",
+    "pages/my-coupons/index",
+    "pages/merchant-lottery/index"
+  ],
+  "window": {
+    "backgroundTextStyle": "light",
+    "navigationBarBackgroundColor": "#FFFFFF",
+    "navigationBarTitleText": "趣测星球",
+    "navigationBarTextStyle": "black",
+    "backgroundColor": "#FBF6FD"
+  },
+  "tabBar": {
+    "color": "#A99BB2",
+    "selectedColor": "#FF7EB3",
+    "backgroundColor": "#FFFFFF",
+    "borderStyle": "white",
+    "list": [
+      {
+        "pagePath": "pages/index/index",
+        "text": "首页",
+        "iconPath": "images/tab_home.png",
+        "selectedIconPath": "images/tab_home_on.png"
+      },
+      {
+        "pagePath": "pages/points/index",
+        "text": "积分",
+        "iconPath": "images/tab_points.png",
+        "selectedIconPath": "images/tab_points_on.png"
+      },
+      {
+        "pagePath": "pages/referral/index",
+        "text": "分销",
+        "iconPath": "images/tab_referral.png",
+        "selectedIconPath": "images/tab_referral_on.png"
+      },
+      {
+        "pagePath": "pages/profile/index",
+        "text": "我的",
+        "iconPath": "images/tab_profile.png",
+        "selectedIconPath": "images/tab_profile_on.png"
+      }
+    ]
+  },
+  "sitemapLocation": "sitemap.json",
+  "style": "v2"
+}

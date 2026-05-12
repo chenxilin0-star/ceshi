@@ -1,0 +1,125 @@
+<view class="page-merchant-lottery">
+  <!-- Header -->
+  <view class="header">
+    <text class="header-title">抽奖配置</text>
+    <text class="header-sub">配置转盘的8个奖项，概率总和需为100%</text>
+  </view>
+
+  <!-- Loading -->
+  <view class="loading-state" wx:if="{{loading}}">
+    <text class="loading-text">加载中...</text>
+  </view>
+
+  <!-- Prize Cards -->
+  <view class="prize-list" wx:if="{{!loading}}">
+    <view class="prize-card" wx:for="{{prizes}}" wx:key="order"
+          style="border-left: 8rpx solid {{item.bgColor}};">
+      <view class="prize-header">
+        <text class="prize-order">奖项 {{item.order}}</text>
+        <view class="prize-enabled">
+          <switch checked="{{item.enabled}}" bindchange="onEnabledChange" data-index="{{index}}"
+                  color="#FF7EB3" size="mini" />
+        </view>
+      </view>
+
+      <!-- 名称 -->
+      <view class="form-row">
+        <text class="form-label">名称</text>
+        <input class="form-input" value="{{item.name}}" bindinput="onNameInput"
+               data-index="{{index}}" placeholder="奖项名称" />
+      </view>
+
+      <!-- 类型 -->
+      <view class="form-row" bindtap="onTypeTap" data-index="{{index}}">
+        <text class="form-label">类型</text>
+        <view class="type-display">
+          <text class="type-tag {{item.type}}">{{item.type === 'points' ? '积分' : item.type === 'product' ? '实物' : '谢谢参与'}}</text>
+          <text class="arrow">▸</text>
+        </view>
+      </view>
+
+      <!-- 积分数（仅积分类型） -->
+      <view class="form-row" wx:if="{{item.type === 'points'}}">
+        <text class="form-label">积分数</text>
+        <input class="form-input" type="digit" value="{{item.points}}" bindinput="onPointsInput"
+               data-index="{{index}}" placeholder="积分数" />
+      </view>
+
+      <!-- 商品选择（仅实物类型） -->
+      <view class="form-row" wx:if="{{item.type === 'product'}}">
+        <text class="form-label">商品</text>
+        <view class="product-select" bindtap="onSelectProduct" data-index="{{index}}">
+          <text class="product-name">{{item.productName || '点击选择商品'}}</text>
+          <text class="arrow">▸</text>
+        </view>
+      </view>
+
+      <!-- 库存（仅实物类型） -->
+      <view class="form-row" wx:if="{{item.type === 'product'}}">
+        <text class="form-label">库存</text>
+        <input class="form-input" type="number" value="{{item.stock}}" bindinput="onStockInput"
+               data-index="{{index}}" placeholder="库存数量（空=无限）" />
+      </view>
+
+      <!-- 概率 -->
+      <view class="form-row">
+        <text class="form-label">概率%</text>
+        <input class="form-input" type="digit" value="{{item.probability}}" bindinput="onProbInput"
+               data-index="{{index}}" placeholder="0.0" />
+      </view>
+    </view>
+  </view>
+
+  <!-- 总概率 -->
+  <view class="prob-summary" wx:if="{{!loading}}">
+    <text class="prob-text {{totalProb === 100 ? 'ok' : 'error'}}">
+      概率总和：{{totalProb}}%
+    </text>
+    <text class="prob-hint">{{totalProb === 100 ? '总和正确' : '总和必须为100%'}}</text>
+  </view>
+
+  <!-- 保存按钮 -->
+  <view class="save-section" wx:if="{{!loading}}">
+    <view class="save-btn {{saving ? 'disabled' : ''}}" bindtap="{{saving ? '' : 'onSave'}}">
+      {{saving ? '保存中...' : '保存配置'}}
+    </view>
+  </view>
+
+  <!-- 类型选择弹窗 -->
+  <view class="picker-mask" wx:if="{{showTypePicker}}" bindtap="onTypeCancel">
+    <view class="picker-card" catchtap="">
+      <text class="picker-title">选择奖项类型</text>
+      <view class="picker-option" bindtap="onTypeSelect" data-type="none">
+        <text class="picker-option-text">谢谢参与</text>
+        <text class="picker-option-desc">中奖后无操作</text>
+      </view>
+      <view class="picker-option" bindtap="onTypeSelect" data-type="points">
+        <text class="picker-option-text">积分</text>
+        <text class="picker-option-desc">中奖后自动加积分</text>
+      </view>
+      <view class="picker-option" bindtap="onTypeSelect" data-type="product">
+        <text class="picker-option-text">实物</text>
+        <text class="picker-option-desc">从已有商品选择，中奖后扣库存</text>
+      </view>
+      <view class="picker-cancel" bindtap="onTypeCancel">取消</view>
+    </view>
+  </view>
+
+  <!-- 商品选择弹窗 -->
+  <view class="picker-mask" wx:if="{{showProductPicker}}" bindtap="onProductCancel">
+    <view class="picker-card picker-card-large" catchtap="">
+      <text class="picker-title">选择商品</text>
+      <scroll-view scroll-y class="product-scroll">
+        <view class="product-item" wx:for="{{products}}" wx:key="_id"
+              bindtap="onProductSelect" data-id="{{item._id}}" data-name="{{item.name}}">
+          <text class="product-item-name">{{item.name}}</text>
+          <text class="product-item-stock">库存: {{item.remainingCount}}</text>
+        </view>
+        <view class="product-empty" wx:if="{{products.length === 0}}">
+          <text>暂无商品，请先在商品管理中添加</text>
+        </view>
+      </scroll-view>
+      <view class="picker-cancel" bindtap="onProductCancel">取消</view>
+    </view>
+  </view>
+</view>

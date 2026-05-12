@@ -1,0 +1,31 @@
+<view class="page-merchant-products">
+  <!-- Add button -->
+  <view class="add-bar" bindtap="goAddProduct">
+    <text class="add-text">+ 添加商品</text>
+  </view>
+
+  <!-- Product list -->
+  <view class="product-list" wx:if="{{products.length > 0}}">
+    <view class="product-item" wx:for="{{products}}" wx:key="_id">
+      <image class="product-thumb" src="{{item.image}}" mode="aspectFill" />
+      <view class="product-info">
+        <text class="product-name">{{item.name}}</text>
+        <view class="product-meta">
+          <text class="meta-text">{{item.requiredPoints}} 积分</text>
+          <text class="meta-text">库存 {{item.remainingCount}}/{{item.totalCount}}</text>
+        </view>
+        <view class="status-tag {{item.status === 'active' ? 'active' : 'inactive'}}">{{item.statusText}}</view>
+      </view>
+      <view class="product-actions">
+        <view class="btn-action" bindtap="goEditProduct" data-id="{{item._id}}">编辑</view>
+        <view class="btn-action btn-danger" wx:if="{{item.status === 'active'}}" bindtap="toggleProduct" data-id="{{item._id}}" data-status="{{item.status}}">下架</view>
+      </view>
+    </view>
+  </view>
+
+  <!-- Empty state -->
+  <view class="empty-state" wx:if="{{products.length === 0 && !loading}}">
+    <text class="emoji">📦</text>
+    <text class="text">还没有商品，点击上方添加</text>
+  </view>
+</view>

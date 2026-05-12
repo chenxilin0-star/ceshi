@@ -1,0 +1,46 @@
+<wxs src="../../utils/filters.wxs" module="f" />
+<view class="page-referral">
+  <!-- Stats cards -->
+  <view class="stats-grid">
+    <view class="stat-card">
+      <text class="value">{{referralCount}}</text>
+      <text class="label">推荐人数</text>
+    </view>
+    <view class="stat-card stat-card-accent">
+      <text class="value">{{f.formatPoints(totalReferralPoints)}}</text>
+      <text class="label">分销积分</text>
+    </view>
+  </view>
+
+  <!-- Rules card -->
+  <view class="rules-card card">
+    <text class="rules-title">📋 分销规则</text>
+    <text class="rules-text">下级每消费20元，你可获得1.0积分（精确到0.1）</text>
+    <text class="rules-text">积分自动到账，无上限</text>
+  </view>
+
+  <!-- Share button -->
+  <button class="share-btn" open-type="share">
+    <text>📤 分享给好友，自动绑定推荐关系</text>
+  </button>
+
+  <!-- Referral points section -->
+  <view class="section container">
+    <view class="section-header">
+      <text class="title">分销积分记录</text>
+    </view>
+
+    <view class="points-list" wx:if="{{referralPoints.length > 0}}">
+      <view class="record-item" wx:for="{{referralPoints}}" wx:key="_id">
+        <text class="change">+{{f.formatPoints(item.points)}}积分</text>
+        <text class="detail">下级消费 ¥{{item.amount}}</text>
+        <text class="time">{{item.createTimeShort}}</text>
+      </view>
+    </view>
+
+    <view class="empty-state" wx:if="{{referralPoints.length === 0 && !loading}}">
+      <text class="emoji">💰</text>
+      <text class="text">还没有分销积分，推荐越多赚得越多</text>
+    </view>
+  </view>
+</view>

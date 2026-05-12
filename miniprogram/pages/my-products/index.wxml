@@ -1,0 +1,55 @@
+<view class="page-my-products">
+  <!-- Tab switch -->
+  <view class="tab-switch">
+    <view class="tab-item {{activeTab === 'unused' ? 'active' : ''}}" bindtap="switchTab" data-tab="unused">
+      待领取({{unusedCount}})
+    </view>
+    <view class="tab-item {{activeTab === 'used' ? 'active' : ''}}" bindtap="switchTab" data-tab="used">
+      已核销
+    </view>
+    <view class="tab-item {{activeTab === 'expired' ? 'active' : ''}}" bindtap="switchTab" data-tab="expired">
+      已过期
+    </view>
+  </view>
+
+  <!-- Product list -->
+  <view class="product-list" wx:if="{{filteredProducts.length > 0}}">
+    <view class="product-item" wx:for="{{filteredProducts}}" wx:key="_id">
+      <view class="header">
+        <image class="product-thumb" src="{{item.productImage}}" mode="aspectFill" />
+        <view class="product-detail">
+          <text class="name">{{item.productName || '商品'}}</text>
+          <text class="expiry">有效期至 {{item.expireAtShort}}</text>
+        </view>
+      </view>
+
+      <!-- Verify code section (only for unused) -->
+      <view class="verify-section" wx:if="{{item.status === 'unused'}}">
+        <text class="verify-label">核销码（到店出示）</text>
+        <text class="verify-code {{item.showCode ? '' : 'masked'}}">{{item.showCode ? item.verifyCode : item.verifyCodeMasked}}</text>
+        <view class="qrcode-wrap" wx:if="{{item.showCode}}">
+          <canvas type="2d" id="qrcode-{{index}}" class="qrcode-canvas"></canvas>
+        </view>
+        <view class="btn-show" bindtap="toggleCode" data-id="{{item._id}}" data-index="{{index}}">
+          <text>{{item.showCode ? '隐藏核销码' : '出示给店员'}}</text>
+        </view>
+      </view>
+
+      <!-- Used info -->
+      <view class="used-info" wx:if="{{item.status === 'used'}}">
+        <text class="used-text">已于 {{item.usedAtShort || '--'}} 核销</text>
+      </view>
+
+      <!-- Expired info -->
+      <view class="expired-info" wx:if="{{item.status === 'expired'}}">
+        <text class="expired-text">已过期</text>
+      </view>
+    </view>
+  </view>
+
+  <!-- Empty state -->
+  <view class="empty-state" wx:if="{{filteredProducts.length === 0}}">
+    <text class="emoji">🎁</text>
+    <text class="text">{{activeTab === 'unused' ? '还没有兑换商品，快去积分兑换吧' : activeTab === 'used' ? '还没有已核销的商品' : '还没有已过期的商品'}}</text>
+  </view>
+</view>

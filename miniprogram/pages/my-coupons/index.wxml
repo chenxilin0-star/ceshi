@@ -1,0 +1,52 @@
+<view class="page-my-coupons">
+  <!-- Tab switch -->
+  <view class="tab-switch">
+    <view class="tab-item {{activeTab === 'unused' ? 'active' : ''}}" bindtap="switchTab" data-tab="unused">
+      未使用({{unusedCount}})
+    </view>
+    <view class="tab-item {{activeTab === 'used' ? 'active' : ''}}" bindtap="switchTab" data-tab="used">
+      已使用
+    </view>
+    <view class="tab-item {{activeTab === 'expired' ? 'active' : ''}}" bindtap="switchTab" data-tab="expired">
+      已过期
+    </view>
+  </view>
+
+  <!-- Coupon list -->
+  <view class="coupon-list" wx:if="{{filteredCoupons.length > 0}}">
+    <view class="coupon-item" wx:for="{{filteredCoupons}}" wx:key="_id">
+      <view class="header">
+        <view>
+          <text class="name">{{item.templateName || '优惠券'}}</text>
+          <text class="expiry">有效期至 {{item.expireAtShort}}</text>
+        </view>
+        <view class="face-value" wx:if="{{item.faceValue}}">¥{{item.faceValue}}</view>
+      </view>
+
+      <!-- Verify code section (only for unused) -->
+      <view class="verify-section" wx:if="{{item.status === 'unused'}}">
+        <text class="verify-label">核销码</text>
+        <text class="verify-code {{item.showCode ? '' : 'masked'}}">{{item.showCode ? item.verifyCode : item.verifyCodeMasked}}</text>
+        <view class="btn-show" bindtap="toggleCode" data-id="{{item._id}}">
+          <text>{{item.showCode ? '隐藏核销码' : '出示给店员'}}</text>
+        </view>
+      </view>
+
+      <!-- Used info -->
+      <view class="used-info" wx:if="{{item.status === 'used'}}">
+        <text class="used-text">已于 {{item.usedAtShort || '--'}} 使用</text>
+      </view>
+
+      <!-- Expired info -->
+      <view class="expired-info" wx:if="{{item.status === 'expired'}}">
+        <text class="expired-text">已过期</text>
+      </view>
+    </view>
+  </view>
+
+  <!-- Empty state -->
+  <view class="empty-state" wx:if="{{filteredCoupons.length === 0}}">
+    <text class="emoji">🎫</text>
+    <text class="text">{{activeTab === 'unused' ? '还没有优惠券，积分达到15分即可兑换' : activeTab === 'used' ? '还没有已使用的券' : '还没有已过期的券'}}</text>
+  </view>
+</view>

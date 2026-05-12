@@ -1,0 +1,57 @@
+<view class="page-test-result">
+  <!-- Loading -->
+  <view class="loading-state" wx:if="{{loading}}">
+    <text class="loading-emoji">✨</text>
+    <text class="loading-text">正在生成你的测试报告...</text>
+  </view>
+
+  <!-- Result content -->
+  <view class="result-content" wx:if="{{!loading && result}}">
+    <!-- Header -->
+    <view class="result-header">
+      <view class="result-badge">{{result.resultEmoji || '🎉'}}</view>
+      <text class="result-label">测试完成</text>
+      <text class="result-title">{{result.resultTitle}}</text>
+    </view>
+
+    <!-- Score card -->
+    <view class="score-card">
+      <view class="score-circle">
+        <text class="score-number">{{result.score}}</text>
+        <text class="score-unit">分</text>
+      </view>
+      <view class="score-meta">
+        <view class="meta-item">
+          <text class="meta-label">测试</text>
+          <text class="meta-value">{{result.testTitle}}</text>
+        </view>
+        <view class="meta-item">
+          <text class="meta-label">题数</text>
+          <text class="meta-value">{{result.questionCount || '-'}}题</text>
+        </view>
+      </view>
+    </view>
+
+    <!-- Analysis card -->
+    <view class="analysis-card">
+      <text class="analysis-title">结果分析</text>
+      <text class="analysis-text">{{result.resultDesc}}</text>
+    </view>
+
+    <!-- Actions -->
+    <view class="action-buttons">
+      <view class="btn-primary" bindtap="retryTest">再测一次</view>
+      <view class="btn-outline" bindtap="goHome">回到首页</view>
+      <button class="btn-share" open-type="share">
+        分享给朋友
+      </button>
+    </view>
+  </view>
+
+  <!-- Empty state -->
+  <view class="empty-state" wx:if="{{!loading && !result}}">
+    <text class="emoji">😕</text>
+    <text class="text">未找到测试结果</text>
+    <view class="btn-primary btn-back" bindtap="goHome">回到首页</view>
+  </view>
+</view>

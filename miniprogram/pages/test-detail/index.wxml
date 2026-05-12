@@ -1,0 +1,72 @@
+<view class="page-test-detail">
+  <!-- Loading -->
+  <view class="loading-state" wx:if="{{loading}}">
+    <text class="loading-emoji">✨</text>
+    <text class="loading-text">正在加载测试题目...</text>
+  </view>
+
+  <!-- Submitting overlay -->
+  <view class="submitting-overlay" wx:if="{{submitting}}">
+    <view class="submitting-card">
+      <text class="submitting-emoji">🔮</text>
+      <text class="submitting-text">正在分析你的结果...</text>
+    </view>
+  </view>
+
+  <!-- Test content -->
+  <view class="test-content" wx:if="{{!loading && questions.length > 0}}">
+    <!-- Header -->
+    <view class="test-header">
+      <view class="test-info">
+        <view class="tag tag-{{test.category === '性格' ? 'pink' : test.category === '心理' ? 'purple' : test.category === '消费' ? 'orange' : test.category === '恋爱' ? 'red' : test.category === '社交' ? 'blue' : 'violet'}}">{{test.category}}</view>
+        <text class="test-title">{{test.title}}</text>
+      </view>
+      <!-- Progress -->
+      <view class="progress-section">
+        <view class="progress-text">
+          <text class="progress-current">{{currentIndex + 1}}</text>
+          <text class="progress-total">/{{questions.length}}</text>
+        </view>
+        <view class="progress-bar">
+          <view class="progress-fill" style="width: {{((currentIndex + 1) / questions.length * 100)}}%"></view>
+        </view>
+      </view>
+    </view>
+
+    <!-- Question card -->
+    <view class="question-card">
+      <text class="question-text">{{questions[currentIndex].text}}</text>
+
+      <!-- Options -->
+      <view class="options-list">
+        <view
+          class="option-item {{selectedOption === idx ? 'selected' : ''}}"
+          wx:for="{{questions[currentIndex].options}}"
+          wx:for-index="idx"
+          wx:for-item="opt"
+          wx:key="idx"
+          bindtap="selectOption"
+          data-idx="{{idx}}"
+        >
+          <view class="option-label">{{idx === 0 ? 'A' : idx === 1 ? 'B' : idx === 2 ? 'C' : 'D'}}</view>
+          <text class="option-text">{{opt.text}}</text>
+          <view class="option-check" wx:if="{{selectedOption === idx}}">✓</view>
+        </view>
+      </view>
+    </view>
+
+    <!-- Bottom: only prev button + hint -->
+    <view class="bottom-bar">
+      <view class="btn-prev {{currentIndex === 0 ? 'disabled' : ''}}" bindtap="prevQuestion">
+        ← 上一题
+      </view>
+      <text class="bottom-hint">选择后自动进入下一题</text>
+    </view>
+  </view>
+
+  <!-- Empty state -->
+  <view class="empty-state" wx:if="{{!loading && questions.length === 0}}">
+    <text class="emoji">🎯</text>
+    <text class="text">题目加载失败，请返回重试</text>
+  </view>
+</view>

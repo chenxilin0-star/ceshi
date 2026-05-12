@@ -1,0 +1,1 @@
+{"_id":"coupon_10","name":"10元通用优惠券","description":"满20元可用，全平台通用","requiredPoints":15,"faceValue":10.00,"totalCount":10000,"remainingCount":10000,"minOrderAmount":20.00,"expireDays":30,"status":"active"}

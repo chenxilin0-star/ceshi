@@ -1,0 +1,36 @@
+<view class="page-product-edit">
+  <view class="form-section">
+    <!-- Image upload -->
+    <text class="form-title">商品图片</text>
+    <view class="upload-area" bindtap="chooseImage">
+      <image class="upload-preview" wx:if="{{image}}" src="{{tempFilePath || image}}" mode="aspectFill" />
+      <view class="upload-placeholder" wx:else>
+        <text class="upload-icon">📷</text>
+        <text class="upload-text">点击上传商品图片</text>
+      </view>
+    </view>
+
+    <!-- Name -->
+    <view class="form-group">
+      <text class="form-label">商品名称</text>
+      <input class="input-field" value="{{name}}" bindinput="onNameInput" placeholder="请输入商品名称" />
+    </view>
+
+    <!-- Required points -->
+    <view class="form-group">
+      <text class="form-label">所需积分</text>
+      <input class="input-field" type="number" value="{{requiredPoints}}" bindinput="onPointsInput" placeholder="请输入兑换所需积分" />
+    </view>
+
+    <!-- Total count -->
+    <view class="form-group">
+      <text class="form-label">库存数量</text>
+      <input class="input-field" type="number" value="{{totalCount}}" bindinput="onCountInput" placeholder="请输入商品库存数量" />
+    </view>
+  </view>
+
+  <!-- Submit button -->
+  <view class="btn-primary {{canSubmit ? '' : 'disabled'}}" bindtap="submit">
+    {{submitting ? '提交中...' : (isEdit ? '保存修改' : '添加商品')}}
+  </view>
+</view>

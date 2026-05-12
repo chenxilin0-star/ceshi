@@ -1,0 +1,269 @@
+/* ===================================================
+   Home Page - Dreamy Candy Theme
+   Soft macaron pinks, fluffy rounded cards, bubble shadows
+   =================================================== */
+
+/* --- Page Container --- */
+.page-home {
+  min-height: 100vh;
+  background: var(--color-bg-page, #FBF6FD);
+  padding-bottom: 120rpx;
+}
+
+/* --- Header Banner --- */
+.header {
+  background: linear-gradient(135deg, #FFC3F7, #D4A8FF);
+  padding: 80rpx 32rpx 120rpx;
+  border-radius: 0 0 48rpx 48rpx;
+  position: relative;
+  overflow: hidden;
+}
+
+/* Subtle shimmer overlay on header */
+.header::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(
+    180deg,
+    rgba(255, 255, 255, 0.15) 0%,
+    rgba(255, 255, 255, 0) 60%
+  );
+  pointer-events: none;
+}
+
+.header-content {
+  position: relative;
+  z-index: 1;
+}
+
+.title {
+  font-size: 48rpx;
+  font-weight: 700;
+  color: #FFFFFF;
+  display: block;
+  text-shadow: 0 2rpx 8rpx rgba(180, 120, 200, 0.3);
+  letter-spacing: 1rpx;
+}
+
+.subtitle {
+  font-size: 28rpx;
+  color: rgba(255, 255, 255, 0.8);
+  margin-top: 12rpx;
+  display: block;
+  text-shadow: 0 1rpx 4rpx rgba(180, 120, 200, 0.2);
+  letter-spacing: 0.5rpx;
+}
+
+/* --- Banner Card (Frosted Glass) --- */
+.banner-card {
+  background: rgba(255, 255, 255, 0.18);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1rpx solid rgba(255, 255, 255, 0.35);
+  border-radius: 28rpx;
+  padding: 32rpx;
+  margin-top: 32rpx;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  box-shadow: 0 4rpx 20rpx rgba(255, 195, 247, 0.15);
+}
+
+.banner-text {
+  font-size: 28rpx;
+  color: #FFFFFF;
+  font-weight: 500;
+}
+
+.banner-action {
+  font-size: 26rpx;
+  color: #FFFFFF;
+  opacity: 0.9;
+}
+
+/* --- Content Section (overlaps header) --- */
+.section {
+  margin-top: -60rpx;
+  position: relative;
+  z-index: 2;
+  padding: 0 32rpx;
+}
+
+.section-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  margin-bottom: 24rpx;
+}
+
+.section-header .title {
+  font-size: 32rpx;
+  font-weight: 700;
+  color: var(--color-text-primary, #3D3046);
+  text-shadow: none;
+  letter-spacing: 0;
+}
+
+.section-header .count {
+  font-size: 24rpx;
+  color: var(--color-text-tertiary, #A99BB2);
+}
+
+/* --- Test List --- */
+.test-list {
+  margin-top: 24rpx;
+}
+
+/* --- Test Card (Fluffy Bubble Card) --- */
+.test-card {
+  background: #FFFFFF;
+  border-radius: 28rpx;
+  padding: 24rpx;
+  margin-bottom: 24rpx;
+  box-shadow: 0 4rpx 24rpx rgba(255, 126, 179, 0.08),
+              0 1rpx 4rpx rgba(212, 87, 138, 0.04);
+  border: 1rpx solid var(--color-border-light, #F8F3FA);
+  display: flex;
+  gap: 24rpx;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.test-card:active {
+  transform: scale(0.97);
+  box-shadow: 0 2rpx 12rpx rgba(255, 126, 179, 0.12);
+}
+
+/* --- Cover Image with Category Gradients --- */
+.cover {
+  width: 160rpx;
+  height: 160rpx;
+  border-radius: 20rpx;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  overflow: hidden;
+}
+
+/* Soft inner glow on cover */
+.cover::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(
+    135deg,
+    rgba(255, 255, 255, 0.25) 0%,
+    rgba(255, 255, 255, 0) 60%
+  );
+  border-radius: 20rpx;
+  pointer-events: none;
+}
+
+/* Category gradient themes */
+.cover-love {
+  background: linear-gradient(135deg, #FFA8C5, #FF7EB3);
+}
+
+.cover-personality {
+  background: linear-gradient(135deg, #D4A8FF, #B388FF);
+}
+
+.cover-career {
+  background: linear-gradient(135deg, #82B1FF, #B388FF);
+}
+
+.cover-fun {
+  background: linear-gradient(135deg, #FFD9A0, #FFB74D);
+}
+
+.cover-mental {
+  background: linear-gradient(135deg, #A8EDEA, #FED6E3);
+}
+
+.cover-default {
+  background: linear-gradient(135deg, #FFC3F7, #D4A8FF);
+}
+
+.cover-emoji {
+  font-size: 64rpx;
+  position: relative;
+  z-index: 1;
+}
+
+/* --- Info Area --- */
+.info {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  min-width: 0;
+}
+
+.info .name {
+  font-size: 32rpx;
+  font-weight: 700;
+  color: var(--color-text-primary, #3D3046);
+  margin-top: 4rpx;
+  line-height: 1.3;
+}
+
+.info .desc {
+  font-size: 24rpx;
+  color: var(--color-text-tertiary, #A99BB2);
+  margin-top: 8rpx;
+  line-height: 1.6;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+}
+
+/* --- Meta Info --- */
+.meta {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 12rpx;
+}
+
+.meta-text {
+  font-size: 22rpx;
+  color: var(--color-text-tertiary, #A99BB2);
+}
+
+/* --- Tag / Badge Styles --- */
+.tag {
+  font-size: 20rpx;
+  padding: 4rpx 16rpx;
+  border-radius: 16rpx;
+  background: var(--color-primary-light, #FFF2F7);
+  color: var(--color-primary, #FF7EB3);
+  font-weight: 500;
+}
+
+/* --- Empty State --- */
+.empty-state {
+  text-align: center;
+  padding: 120rpx 0;
+}
+
+.empty-icon {
+  font-size: 96rpx;
+  display: block;
+  margin-bottom: 24rpx;
+}
+
+.empty-text {
+  font-size: 28rpx;
+  color: var(--color-text-tertiary, #A99BB2);
+  display: block;
+}

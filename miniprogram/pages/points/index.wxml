@@ -1,0 +1,94 @@
+<wxs src="../../utils/filters.wxs" module="f" />
+<view class="page-points">
+  <!-- Points card -->
+  <view class="points-card">
+    <text class="label">我的积分</text>
+    <text class="value">{{f.formatPoints(userInfo.totalPoints)}}</text>
+    <text class="rule">每消费10元 = 1.0积分（精确到0.1）</text>
+    <view class="action" bindtap="goProductList">去兑换商品 ></view>
+  </view>
+
+  <!-- Upload receipt section -->
+  <view class="upload-section card">
+    <text class="section-title">上传消费凭证</text>
+
+    <!-- 未选择照片时显示选择按钮 -->
+    <view class="camera-area" wx:if="{{!tempFilePath}}" bindtap="takePhoto">
+      <text class="camera-icon">🖼️</text>
+      <text class="camera-text">点击选择照片</text>
+      <text class="camera-sub">请从相册选择微信/支付宝支付凭证</text>
+    </view>
+
+    <!-- 已拍照显示预览 -->
+    <view class="preview-area" wx:if="{{tempFilePath}}">
+      <image class="preview-image" src="{{tempFilePath}}" mode="aspectFit"></image>
+    </view>
+
+    <!-- 识别中 -->
+    <view class="recognizing-status" wx:if="{{recognizing}}">
+      <text class="loading-icon">⏳</text>
+      <text class="loading-text">正在识别中...</text>
+    </view>
+
+    <!-- 识别结果展示 -->
+    <view class="ocr-result" wx:if="{{ocrResult}}">
+      <view class="result-header">
+        <text class="result-title">识别结果</text>
+        <view class="result-badge {{ocrResult.parsed.valid ? 'badge-success' : 'badge-error'}}">
+          {{ocrResult.parsed.valid ? '验证通过' : '验证不通过'}}
+        </view>
+      </view>
+
+      <view class="result-field">
+        <text class="field-label">商品</text>
+        <text class="field-value {{ocrResult.parsed.product ? '' : 'field-error'}}">{{ocrResult.parsed.product || '未识别'}}</text>
+      </view>
+      <view class="result-field">
+        <text class="field-label">消费金额</text>
+        <text class="field-value {{ocrResult.parsed.amount > 0 ? '' : 'field-error'}}">¥{{ocrResult.parsed.amount || '0.00'}}</text>
+      </view>
+
+      <!-- 预计获得积分 -->
+      <view class="points-preview" wx:if="{{ocrResult.parsed.valid}}">
+        预计获得 <text class="points-num">{{f.formatPoints(ocrResult.parsed.pointsPreview)}}</text> 积分
+      </view>
+
+      <!-- 验证错误信息 -->
+      <view class="result-errors" wx:if="{{ocrResult.parsed.errors.length > 0}}">
+        <text class="error-title">未通过项：</text>
+        <text class="error-item" wx:for="{{ocrResult.parsed.errors}}" wx:key="index">• {{item}}</text>
+      </view>
+
+      <!-- 操作按钮 -->
+      <view class="result-actions">
+        <view class="btn-secondary" bindtap="retakePhoto">重新选择</view>
+        <view class="btn-primary {{ocrResult.parsed.valid ? '' : 'disabled'}}" bindtap="submitReceipt">
+          {{submitting ? '提交中...' : '确认获取积分'}}
+        </view>
+      </view>
+    </view>
+  </view>
+
+  <!-- Receipt history -->
+  <view class="history-section container">
+    <view class="section-header">
+      <text class="title">最近记录</text>
+    </view>
+
+    <view class="receipt-list" wx:if="{{receipts.length > 0}}">
+      <view class="receipt-item" wx:for="{{receipts}}" wx:key="_id">
+        <text class="icon">🧾</text>
+        <view class="info">
+          <text class="amount">¥{{item.amount}}</text>
+          <text class="date">{{item.createTimeShort}}</text>
+        </view>
+        <text class="points">+{{f.formatPoints(item.pointsEarned)}}</text>
+      </view>
+    </view>
+
+    <view class="empty-state" wx:if="{{receipts.length === 0 && !loading}}">
+      <text class="emoji">🧾</text>
+      <text class="text">还没有消费记录，快去上传第一笔吧！</text>
+    </view>
+  </view>
+</view>

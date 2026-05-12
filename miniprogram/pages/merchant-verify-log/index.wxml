@@ -1,0 +1,18 @@
+<view class="page-verify-log">
+  <view class="log-list" wx:if="{{logs.length > 0}}">
+    <view class="log-item" wx:for="{{logs}}" wx:key="_id">
+      <view class="log-header">
+        <text class="log-product">{{item.productName || '商品'}}</text>
+        <text class="log-time">{{item.createTimeShort}}</text>
+      </view>
+      <view class="log-meta">
+        <text class="log-code">核销码: {{item.verifyCode}}</text>
+      </view>
+    </view>
+  </view>
+
+  <view class="empty-state" wx:if="{{logs.length === 0 && !loading}}">
+    <text class="emoji">📋</text>
+    <text class="text">还没有核销记录</text>
+  </view>
+</view>

@@ -1,0 +1,31 @@
+<view class="page-merchant-home" wx:if="{{isMerchant}}">
+  <!-- Header -->
+  <view class="header">
+    <text class="header-title">商户管理</text>
+    <text class="header-sub">管理商品与核销</text>
+  </view>
+
+  <!-- Quick actions -->
+  <view class="action-grid">
+    <view class="action-card" bindtap="goProductManage">
+      <text class="action-icon">📦</text>
+      <text class="action-title">商品管理</text>
+      <text class="action-desc">上架/编辑/下架商品</text>
+    </view>
+    <view class="action-card" bindtap="goVerify">
+      <text class="action-icon">🔍</text>
+      <text class="action-title">扫码核销</text>
+      <text class="action-desc">输入或扫码核销商品</text>
+    </view>
+    <view class="action-card" bindtap="goVerifyLog">
+      <text class="action-icon">📋</text>
+      <text class="action-title">核销记录</text>
+      <text class="action-desc">查看历史核销记录</text>
+    </view>
+    <view class="action-card" bindtap="goLotteryConfig">
+      <text class="action-icon">🎰</text>
+      <text class="action-title">抽奖配置</text>
+      <text class="action-desc">配置转盘奖项与概率</text>
+    </view>
+  </view>
+</view>

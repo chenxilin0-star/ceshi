@@ -1,0 +1,45 @@
+<view class="page-home">
+  <!-- Header gradient -->
+  <view class="header">
+    <view class="header-content">
+      <text class="title">趣测星球</text>
+      <text class="subtitle">探索自我，发现无限可能</text>
+      <!-- Banner card -->
+      <view class="banner-card" bindtap="goProductList">
+        <text class="banner-text">积分兑换好礼，消费即可赚积分</text>
+        <text class="banner-action">去兑换 ></text>
+      </view>
+    </view>
+  </view>
+
+  <!-- Test list section -->
+  <view class="section container">
+    <view class="section-header">
+      <text class="title">热门心理测试</text>
+      <text class="count">{{tests.length}}个</text>
+    </view>
+
+    <view class="test-list">
+      <view class="test-card" wx:for="{{tests}}" wx:key="_id" bindtap="goTest" data-id="{{item._id}}">
+        <view class="cover" style="background: {{coverColors[item.category] || 'linear-gradient(135deg, #FF6B9D, #9B59B6)'}}">
+          <text class="cover-emoji">{{categoryEmojis[item.category] || '🎯'}}</text>
+        </view>
+        <view class="info">
+          <view class="tag tag-{{item.category === '性格' ? 'pink' : item.category === '心理' ? 'purple' : item.category === '消费' ? 'orange' : item.category === '恋爱' ? 'red' : item.category === '社交' ? 'blue' : 'violet'}}">{{item.category}}</view>
+          <text class="name">{{item.title}}</text>
+          <text class="desc">{{item.description}}</text>
+          <view class="meta">
+            <text class="meta-text">{{item.questionCount}}题</text>
+            <view class="btn-mini">开始测试</view>
+          </view>
+        </view>
+      </view>
+    </view>
+
+    <!-- Empty state -->
+    <view class="empty-state" wx:if="{{tests.length === 0 && !loading}}">
+      <text class="emoji">🎯</text>
+      <text class="text">还没有测试，敬请期待</text>
+    </view>
+  </view>
+</view>

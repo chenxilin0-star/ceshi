@@ -1,0 +1,30 @@
+<view class="page-product-list">
+  <!-- Points bar -->
+  <view class="points-bar">
+    <text class="label">当前可用积分</text>
+    <text class="value">{{totalPoints}}</text>
+  </view>
+
+  <!-- Product grid -->
+  <view class="product-grid" wx:if="{{products.length > 0}}">
+    <view class="product-card" wx:for="{{products}}" wx:key="_id">
+      <image class="product-image" src="{{item.image}}" mode="aspectFill" />
+      <view class="product-info">
+        <text class="product-name">{{item.name}}</text>
+        <view class="product-meta">
+          <text class="product-points">{{item.requiredPoints}} 积分</text>
+          <text class="product-remain">剩余 {{item.remainingCount}} 件</text>
+        </view>
+      </view>
+      <view class="btn-primary {{totalPoints >= item.requiredPoints && item.remainingCount > 0 ? '' : 'disabled'}}" bindtap="redeem" data-id="{{item._id}}" data-points="{{item.requiredPoints}}">
+        {{totalPoints >= item.requiredPoints ? (item.remainingCount > 0 ? '立即兑换' : '已兑完') : '积分不足'}}
+      </view>
+    </view>
+  </view>
+
+  <!-- Empty state -->
+  <view class="empty-state" wx:if="{{products.length === 0 && !loading}}">
+    <text class="emoji">🎁</text>
+    <text class="text">暂无可兑换的商品</text>
+  </view>
+</view>

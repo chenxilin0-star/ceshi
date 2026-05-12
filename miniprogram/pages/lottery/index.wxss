@@ -1,0 +1,420 @@
+/* ===================================================
+   Lottery Page - Dreamy Candy Theme
+   Spinning wheel, prize reveals, soft candy aesthetics
+   =================================================== */
+
+/* --- Page Container --- */
+.page-lottery {
+  min-height: 100vh;
+  background: linear-gradient(180deg, #FFF2F7 0%, var(--color-bg-page, #FBF6FD) 35%);
+  padding-bottom: 120rpx;
+  position: relative;
+}
+
+/* --- Lottery Header --- */
+.lottery-header {
+  text-align: center;
+  padding: 48rpx 48rpx 24rpx;
+}
+
+.header-title {
+  font-size: 44rpx;
+  font-weight: 700;
+  color: var(--color-text-primary, #3D3046);
+  display: block;
+  letter-spacing: 1rpx;
+}
+
+.header-sub {
+  font-size: 24rpx;
+  color: var(--color-text-tertiary, #A99BB2);
+  margin-top: 12rpx;
+  display: block;
+  letter-spacing: 0.5rpx;
+}
+
+/* --- Wheel Container --- */
+.wheel-container {
+  position: relative;
+  width: 600rpx;
+  height: 600rpx;
+  margin: 32rpx auto;
+}
+
+/* Soft glow ring behind the wheel */
+.wheel-container::before {
+  content: '';
+  position: absolute;
+  top: -20rpx;
+  left: -20rpx;
+  right: -20rpx;
+  bottom: -20rpx;
+  background: radial-gradient(
+    circle,
+    rgba(255, 126, 179, 0.12) 40%,
+    rgba(179, 136, 255, 0.06) 65%,
+    rgba(255, 255, 255, 0) 80%
+  );
+  border-radius: 50%;
+  pointer-events: none;
+  z-index: 0;
+}
+
+/* --- Wheel Pointer (Arrow) --- */
+.wheel-pointer {
+  position: absolute;
+  top: -16rpx;
+  left: 50%;
+  transform: translateX(-50%);
+  font-size: 48rpx;
+  color: var(--color-primary, #FF7EB3);
+  z-index: 10;
+  filter: drop-shadow(0 4rpx 8rpx rgba(255, 126, 179, 0.3));
+}
+
+/* --- Wheel Outer Ring --- */
+.wheel-outer {
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  border: 8rpx solid transparent;
+  background-clip: padding-box;
+  box-shadow: 0 0 0 8rpx transparent;
+  box-sizing: border-box;
+  overflow: hidden;
+  position: relative;
+  z-index: 1;
+  /* gradient-lilac border effect using background trick */
+  background: linear-gradient(#FFFFFF, #FFFFFF) padding-box,
+              linear-gradient(135deg, #FFC3F7, #D4A8FF) border-box;
+  border: 8rpx solid transparent;
+}
+
+/* Outer glow ring */
+.wheel-outer::after {
+  content: '';
+  position: absolute;
+  top: -4rpx;
+  left: -4rpx;
+  right: -4rpx;
+  bottom: -4rpx;
+  border-radius: 50%;
+  border: 4rpx solid rgba(255, 195, 247, 0.3);
+  pointer-events: none;
+}
+
+/* --- Wheel Spin Layer --- */
+.wheel-spin {
+  width: 100%;
+  height: 100%;
+  position: relative;
+  transition: transform 4s cubic-bezier(0.17, 0.67, 0.12, 0.99);
+  -webkit-transition: -webkit-transform 4s cubic-bezier(0.17, 0.67, 0.12, 0.99);
+  border-radius: 50%;
+}
+
+.wheel-image {
+  width: 100%;
+  height: 100%;
+  display: block;
+  border-radius: 50%;
+}
+
+/* --- Canvas Hidden (offscreen for drawing only) --- */
+.wheel-canvas-hide {
+  position: fixed;
+  left: -9999px;
+  top: -9999px;
+  width: 292px;
+  height: 292px;
+}
+
+/* --- Spin Button Section --- */
+.spin-section {
+  text-align: center;
+  margin: 24rpx 0;
+}
+
+.spin-btn {
+  width: 480rpx;
+  height: 88rpx;
+  line-height: 88rpx;
+  background: linear-gradient(135deg, #FF7EB3, #D4578A);
+  color: #FFFFFF;
+  font-size: 32rpx;
+  font-weight: 600;
+  border-radius: 44rpx;
+  margin: 0 auto;
+  text-align: center;
+  letter-spacing: 2rpx;
+  box-shadow: 0 8rpx 32rpx rgba(255, 126, 179, 0.3),
+              0 2rpx 8rpx rgba(212, 87, 138, 0.15);
+  position: relative;
+  overflow: hidden;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+/* Soft shine on the spin button */
+.spin-btn::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 50%;
+  background: linear-gradient(
+    180deg,
+    rgba(255, 255, 255, 0.2) 0%,
+    rgba(255, 255, 255, 0) 100%
+  );
+  border-radius: 44rpx 44rpx 0 0;
+  pointer-events: none;
+}
+
+.spin-btn:active {
+  transform: scale(0.97);
+  box-shadow: 0 4rpx 20rpx rgba(255, 126, 179, 0.25);
+}
+
+.spin-btn.disabled {
+  background: #E0D4E6;
+  box-shadow: none;
+  letter-spacing: 0;
+}
+
+.spin-btn.disabled::before {
+  display: none;
+}
+
+.spin-btn.disabled:active {
+  transform: none;
+}
+
+/* --- Chances Info --- */
+.chances-info {
+  margin-top: 16rpx;
+}
+
+.chances-text {
+  font-size: 26rpx;
+  color: var(--color-text-tertiary, #A99BB2);
+  display: block;
+}
+
+/* --- Rules Section --- */
+.rules-section {
+  margin: 32rpx 48rpx;
+  padding: 28rpx 32rpx;
+  background: #FFFFFF;
+  border-radius: 28rpx;
+  box-shadow: 0 4rpx 24rpx rgba(255, 126, 179, 0.08),
+              0 1rpx 4rpx rgba(212, 87, 138, 0.04);
+  border: 1rpx solid var(--color-border-light, #F8F3FA);
+}
+
+.rules-title {
+  font-size: 28rpx;
+  font-weight: 600;
+  color: var(--color-text-primary, #3D3046);
+  display: block;
+  margin-bottom: 12rpx;
+}
+
+.rules-item {
+  font-size: 24rpx;
+  color: var(--color-text-secondary, #6E5F77);
+  display: block;
+  line-height: 2;
+}
+
+/* --- Share Section --- */
+.share-section {
+  margin: 24rpx 48rpx;
+}
+
+.share-btn {
+  width: 100%;
+  height: 80rpx;
+  line-height: 80rpx;
+  background: #FFFFFF;
+  border: 2rpx solid var(--color-primary, #FF7EB3);
+  color: var(--color-primary, #FF7EB3);
+  font-size: 28rpx;
+  font-weight: 500;
+  border-radius: 40rpx;
+  text-align: center;
+  padding: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  letter-spacing: 1rpx;
+  transition: transform 0.2s ease, background 0.2s ease, color 0.2s ease;
+}
+
+.share-btn:active {
+  transform: scale(0.97);
+  background: var(--color-primary-light, #FFF2F7);
+}
+
+.share-btn::after {
+  border: none;
+}
+
+/* --- Result Mask (Overlay) --- */
+.result-mask {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(61, 48, 70, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 100;
+}
+
+/* --- Result Card --- */
+.result-card {
+  width: 560rpx;
+  padding: 64rpx 48rpx;
+  background: #FFFFFF;
+  border-radius: 36rpx;
+  text-align: center;
+  box-shadow: 0 16rpx 64rpx rgba(255, 126, 179, 0.2),
+              0 4rpx 16rpx rgba(179, 136, 255, 0.1);
+  border: 1rpx solid var(--color-border-light, #F8F3FA);
+  position: relative;
+  overflow: hidden;
+}
+
+/* Top gradient accent on result card */
+.result-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 8rpx;
+  background: linear-gradient(90deg, #FFC3F7, #D4A8FF, #82B1FF);
+}
+
+.result-icon {
+  font-size: 80rpx;
+  display: block;
+  margin-bottom: 24rpx;
+}
+
+.result-title {
+  font-size: 36rpx;
+  font-weight: 700;
+  color: var(--color-text-primary, #3D3046);
+  display: block;
+}
+
+.result-prize {
+  font-size: 44rpx;
+  font-weight: 700;
+  color: var(--color-primary, #FF7EB3);
+  display: block;
+  margin: 16rpx 0;
+  text-shadow: 0 2rpx 8rpx rgba(255, 126, 179, 0.15);
+}
+
+.result-points {
+  font-size: 26rpx;
+  color: var(--color-success, #69DBAF);
+  display: block;
+  font-weight: 500;
+}
+
+/* --- Result Action Buttons --- */
+.result-actions {
+  margin-top: 32rpx;
+  display: flex;
+  gap: 20rpx;
+  justify-content: center;
+}
+
+.result-btn {
+  padding: 16rpx 48rpx;
+  background: linear-gradient(135deg, #FF7EB3, #D4578A);
+  color: #FFFFFF;
+  font-size: 28rpx;
+  font-weight: 500;
+  border-radius: 28rpx;
+  box-shadow: 0 4rpx 16rpx rgba(255, 126, 179, 0.2);
+  transition: transform 0.2s ease;
+}
+
+.result-btn:active {
+  transform: scale(0.95);
+}
+
+/* Mint green variant for retry */
+.result-btn-retry {
+  background: linear-gradient(135deg, #69DBAF, #3CB58A);
+  box-shadow: 0 4rpx 16rpx rgba(105, 219, 175, 0.2);
+}
+
+.result-btn-retry:active {
+  box-shadow: 0 2rpx 8rpx rgba(105, 219, 175, 0.15);
+}
+
+/* --- Decorative: Points Highlight --- */
+.points-highlight {
+  color: var(--color-accent, #FFB74D);
+  font-weight: 600;
+}
+
+/* --- Animations --- */
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(40rpx);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes scaleIn {
+  from {
+    opacity: 0;
+    transform: scale(0.8);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@keyframes pulse {
+  0%, 100% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.05);
+  }
+}
+
+.result-card {
+  animation: scaleIn 0.3s ease-out;
+}
+
+.result-icon {
+  animation: pulse 1.5s ease-in-out infinite;
+}
+
+/* --- Empty / Loading States --- */
+.loading-state {
+  text-align: center;
+  padding: 120rpx 0;
+}
+
+.loading-text {
+  font-size: 28rpx;
+  color: var(--color-text-tertiary, #A99BB2);
+  display: block;
+}

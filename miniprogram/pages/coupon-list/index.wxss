@@ -1,0 +1,104 @@
+/* ========================================
+   Coupon List (Redeemable) - Dreamy Candy Theme
+   Points bar with warm accent, coupon cards
+   with orange gradient top strip
+   ======================================== */
+
+/* ========== Page Container ========== */
+.page-coupon-list {
+  min-height: 100vh;
+  background: var(--color-bg-page);
+  padding-bottom: 120rpx;
+}
+
+/* ========== Points Bar ========== */
+/* Shows current available points with warm accent color */
+.points-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: #FFFFFF;
+  border-radius: var(--radius-lg);
+  padding: 32rpx;
+  margin: 32rpx;
+  box-shadow: var(--shadow-card);
+  border: 1rpx solid rgba(255, 126, 179, 0.06);
+}
+
+.points-bar .label {
+  font-size: 28rpx;
+  color: var(--color-text-secondary);
+}
+
+.points-bar .value {
+  font-size: 40rpx;
+  font-weight: var(--weight-bold);
+  color: var(--color-accent);
+  text-shadow: 0 2rpx 8rpx rgba(255, 183, 77, 0.15);
+}
+
+/* ========== Coupon Card List ========== */
+.coupon-list {
+  padding: 0 32rpx;
+}
+
+/* Individual coupon card with top accent strip */
+.coupon-card {
+  background: #FFFFFF;
+  border-radius: var(--radius-lg);
+  padding: 48rpx;
+  margin-bottom: 32rpx;
+  box-shadow: var(--shadow-card);
+  border: 1rpx solid rgba(255, 126, 179, 0.06);
+  position: relative;
+  overflow: hidden;
+  transition: transform 0.2s ease;
+}
+
+/* Orange gradient top strip via pseudo-element */
+.coupon-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 8rpx;
+  background: var(--gradient-orange);
+  border-radius: var(--radius-lg) var(--radius-lg) 0 0;
+}
+
+.coupon-card .name {
+  font-size: 40rpx;
+  font-weight: var(--weight-bold);
+  color: var(--color-text-primary);
+  display: block;
+}
+
+.coupon-card .desc {
+  font-size: 26rpx;
+  color: var(--color-text-secondary);
+  margin-top: 12rpx;
+  display: block;
+  line-height: var(--line-height-normal);
+}
+
+/* Meta info row with dashed separator */
+.coupon-card .meta {
+  display: flex;
+  align-items: center;
+  gap: 24rpx;
+  margin-top: 32rpx;
+  padding-top: 32rpx;
+  border-top: 1rpx dashed var(--color-border);
+  flex-wrap: wrap;
+}
+
+.coupon-card .meta .value {
+  font-size: 24rpx;
+  color: var(--color-text-tertiary);
+}
+
+/* Redeem button inherits from global .btn-primary */
+.coupon-card .btn-primary {
+  margin-top: 32rpx;
+}
