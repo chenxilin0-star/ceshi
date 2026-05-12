@@ -1,45 +1,126 @@
 <view class="page-home">
-  <!-- Header gradient -->
-  <view class="header">
-    <view class="header-content">
-      <text class="title">趣测星球</text>
-      <text class="subtitle">探索自我，发现无限可能</text>
-      <!-- Banner card -->
-      <view class="banner-card" bindtap="goProductList">
-        <text class="banner-text">积分兑换好礼，消费即可赚积分</text>
-        <text class="banner-action">去兑换 ></text>
+  <view class="hero">
+    <view class="hero-bg hero-bg-one"></view>
+    <view class="hero-bg hero-bg-two"></view>
+    <view class="hero-top">
+      <view>
+        <text class="eyebrow">今日校园星球</text>
+        <text class="hero-title">每天一个校园身份</text>
+        <text class="hero-subtitle">不说教、不诊断，只是给今天加点好玩的状态</text>
+      </view>
+      <view class="planet-badge">✨</view>
+    </view>
+
+    <view class="today-card" bindtap="goFeaturedTest">
+      <view class="today-main">
+        <view class="today-emoji">{{todayCard.emoji}}</view>
+        <view class="today-copy">
+          <text class="today-label">今日主推</text>
+          <text class="today-title">{{todayCard.title}}</text>
+          <text class="today-desc">{{todayCard.desc}}</text>
+        </view>
+      </view>
+      <view class="today-footer">
+        <text class="today-keyword">{{todayCard.keyword}}</text>
+        <view class="today-cta">生成我的今日身份</view>
+      </view>
+    </view>
+
+    <view class="quick-actions">
+      <view class="quick-action" bindtap="goProductList">
+        <text class="quick-icon">🎁</text>
+        <text class="quick-title">积分兑好礼</text>
+      </view>
+      <view class="quick-action" bindtap="goPoints">
+        <text class="quick-icon">🧾</text>
+        <text class="quick-title">小票赚积分</text>
       </view>
     </view>
   </view>
 
-  <!-- Test list section -->
-  <view class="section container">
-    <view class="section-header">
-      <text class="title">热门心理测试</text>
-      <text class="count">{{tests.length}}个</text>
+  <view class="content-wrap">
+    <view class="compliance-note">
+      <text>校园娱乐参考 · 不做专业测评 · 不做结果承诺</text>
     </view>
 
-    <view class="test-list">
-      <view class="test-card" wx:for="{{tests}}" wx:key="_id" bindtap="goTest" data-id="{{item._id}}">
-        <view class="cover" style="background: {{coverColors[item.category] || 'linear-gradient(135deg, #FF6B9D, #9B59B6)'}}">
-          <text class="cover-emoji">{{categoryEmojis[item.category] || '🎯'}}</text>
+    <view class="section">
+      <view class="section-header home-section-header">
+        <view>
+          <text class="section-kicker">6 个频道</text>
+          <text class="section-title">今天想测点什么？</text>
         </view>
-        <view class="info">
-          <view class="tag tag-{{item.category === '性格' ? 'pink' : item.category === '心理' ? 'purple' : item.category === '消费' ? 'orange' : item.category === '恋爱' ? 'red' : item.category === '社交' ? 'blue' : 'violet'}}">{{item.category}}</view>
-          <text class="name">{{item.title}}</text>
-          <text class="desc">{{item.description}}</text>
-          <view class="meta">
-            <text class="meta-text">{{item.questionCount}}题</text>
-            <view class="btn-mini">开始测试</view>
+        <text class="section-action">轻松一点</text>
+      </view>
+
+      <view class="category-grid">
+        <view class="category-card {{item.themeClass}}" wx:for="{{campusCategories}}" wx:key="key" bindtap="goCategory" data-key="{{item.key}}">
+          <view class="category-head">
+            <text class="category-emoji">{{item.emoji}}</text>
+            <text class="category-tag">{{item.tag}}</text>
           </view>
+          <text class="category-title">{{item.title}}</text>
+          <text class="category-subtitle">{{item.subtitle}}</text>
         </view>
       </view>
     </view>
 
-    <!-- Empty state -->
-    <view class="empty-state" wx:if="{{tests.length === 0 && !loading}}">
-      <text class="emoji">🎯</text>
-      <text class="text">还没有测试，敬请期待</text>
+    <view class="section task-section">
+      <view class="section-header home-section-header">
+        <view>
+          <text class="section-kicker">每日小任务</text>
+          <text class="section-title">不用很努力，也能攒点能量</text>
+        </view>
+      </view>
+      <view class="task-list">
+        <view class="task-card" wx:for="{{dailyTasks}}" wx:key="title" bindtap="goTaskAction">
+          <text class="task-emoji">{{item.emoji}}</text>
+          <view class="task-info">
+            <text class="task-title">{{item.title}}</text>
+            <text class="task-desc">{{item.desc}}</text>
+          </view>
+          <text class="task-reward">{{item.rewardText}}</text>
+        </view>
+      </view>
+    </view>
+
+    <view class="section">
+      <view class="section-header home-section-header">
+        <view>
+          <text class="section-kicker">今日推荐</text>
+          <text class="section-title">校园趣测上新</text>
+        </view>
+        <text class="section-count">{{tests.length}} 个</text>
+      </view>
+
+      <view class="test-list" wx:if="{{tests.length > 0}}">
+        <view class="test-card" wx:for="{{tests}}" wx:key="_id" bindtap="goTest" data-id="{{item._id}}">
+          <view class="test-cover {{item.themeClass}}">
+            <text class="cover-emoji">{{item.displayEmoji}}</text>
+          </view>
+          <view class="test-info">
+            <view class="test-topline">
+              <text class="test-tag">{{item.displayCategory}}</text>
+              <text class="test-count">{{item.questionCount}}题</text>
+            </view>
+            <text class="test-name">{{item.title}}</text>
+            <text class="test-desc">{{item.description}}</text>
+            <view class="test-meta">
+              <text class="meta-copy">校园娱乐参考</text>
+              <view class="btn-mini start-btn">开始测试</view>
+            </view>
+          </view>
+        </view>
+      </view>
+
+      <view class="empty-state" wx:if="{{tests.length === 0 && !loading}}">
+        <text class="emoji">🪐</text>
+        <text class="text">今日内容正在上新</text>
+        <text class="empty-subtext">先去兑换区看看积分福利吧</text>
+      </view>
+
+      <view class="loading-state" wx:if="{{loading}}">
+        <text>正在连接校园星球...</text>
+      </view>
     </view>
   </view>
 </view>
