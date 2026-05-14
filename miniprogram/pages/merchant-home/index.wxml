@@ -1,31 +1,119 @@
-<view class="page-merchant-home" wx:if="{{isMerchant}}">
-  <!-- Header -->
-  <view class="header">
-    <text class="header-title">商户管理</text>
-    <text class="header-sub">管理商品与核销</text>
+<view class="page-merchant-home">
+  <!-- Loading -->
+  <view class="merchant-loading" wx:if="{{checking}}">
+    <view class="loading-orbit">
+      <text class="loading-icon">🏪</text>
+    </view>
+    <text class="loading-text">正在进入商户中心…</text>
   </view>
 
-  <!-- Quick actions -->
-  <view class="action-grid">
-    <view class="action-card" bindtap="goProductManage">
-      <text class="action-icon">📦</text>
-      <text class="action-title">商品管理</text>
-      <text class="action-desc">上架/编辑/下架商品</text>
+  <view wx:if="{{isMerchant}}">
+    <!-- Hero dashboard -->
+    <view class="merchant-hero">
+      <view class="hero-bg hero-bg-one"></view>
+      <view class="hero-bg hero-bg-two"></view>
+      <view class="hero-bg hero-bg-three"></view>
+
+      <view class="hero-top">
+        <view>
+          <text class="hero-kicker">商户工作台</text>
+          <text class="hero-title">经营管理中心</text>
+          <text class="hero-sub">管理商品、核销订单、配置抽奖活动</text>
+        </view>
+        <view class="hero-badge">
+          <text class="hero-badge-icon">✓</text>
+          <text class="hero-badge-text">已认证</text>
+        </view>
+      </view>
+
+      <view class="hero-summary">
+        <view class="summary-item">
+          <text class="summary-value">4</text>
+          <text class="summary-label">管理模块</text>
+        </view>
+        <view class="summary-divider"></view>
+        <view class="summary-item">
+          <text class="summary-value">24h</text>
+          <text class="summary-label">即时核销</text>
+        </view>
+        <view class="summary-divider"></view>
+        <view class="summary-item">
+          <text class="summary-value">∞</text>
+          <text class="summary-label">活动配置</text>
+        </view>
+      </view>
     </view>
-    <view class="action-card" bindtap="goVerify">
-      <text class="action-icon">🔍</text>
-      <text class="action-title">扫码核销</text>
-      <text class="action-desc">输入或扫码核销商品</text>
+
+    <!-- Quick actions -->
+    <view class="workspace-section">
+      <view class="section-header merchant-section-header">
+        <view>
+          <text class="section-kicker">快捷入口</text>
+          <text class="section-title">今天要处理什么？</text>
+        </view>
+        <text class="section-action">高效管理</text>
+      </view>
+
+      <view class="action-grid">
+        <view class="action-card card-products" bindtap="goProductManage">
+          <view class="action-glow"></view>
+          <view class="action-icon-wrap">
+            <text class="action-icon">📦</text>
+          </view>
+          <view class="action-copy">
+            <text class="action-title">商品管理</text>
+            <text class="action-desc">上架 / 编辑 / 下架商品</text>
+          </view>
+          <text class="action-arrow">›</text>
+        </view>
+
+        <view class="action-card card-verify" bindtap="goVerify">
+          <view class="action-glow"></view>
+          <view class="action-icon-wrap">
+            <text class="action-icon">🔍</text>
+          </view>
+          <view class="action-copy">
+            <text class="action-title">扫码核销</text>
+            <text class="action-desc">输入或扫码核销商品</text>
+          </view>
+          <text class="action-arrow">›</text>
+        </view>
+
+        <view class="action-card card-log" bindtap="goVerifyLog">
+          <view class="action-glow"></view>
+          <view class="action-icon-wrap">
+            <text class="action-icon">📋</text>
+          </view>
+          <view class="action-copy">
+            <text class="action-title">核销记录</text>
+            <text class="action-desc">查看历史核销记录</text>
+          </view>
+          <text class="action-arrow">›</text>
+        </view>
+
+        <view class="action-card card-lottery" bindtap="goLotteryConfig">
+          <view class="action-glow"></view>
+          <view class="action-icon-wrap">
+            <text class="action-icon">🎰</text>
+          </view>
+          <view class="action-copy">
+            <text class="action-title">抽奖配置</text>
+            <text class="action-desc">配置转盘奖项与概率</text>
+          </view>
+          <text class="action-arrow">›</text>
+        </view>
+      </view>
     </view>
-    <view class="action-card" bindtap="goVerifyLog">
-      <text class="action-icon">📋</text>
-      <text class="action-title">核销记录</text>
-      <text class="action-desc">查看历史核销记录</text>
-    </view>
-    <view class="action-card" bindtap="goLotteryConfig">
-      <text class="action-icon">🎰</text>
-      <text class="action-title">抽奖配置</text>
-      <text class="action-desc">配置转盘奖项与概率</text>
+
+    <!-- Operation tips -->
+    <view class="tips-card">
+      <view class="tips-icon-wrap">
+        <text class="tips-icon">💡</text>
+      </view>
+      <view class="tips-copy">
+        <text class="tips-title">运营小提示</text>
+        <text class="tips-text">先维护商品库存，再配置抽奖奖项；用户到店时可直接扫码或输入核销码完成兑换。</text>
+      </view>
     </view>
   </view>
 </view>
