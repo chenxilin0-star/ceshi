@@ -69,6 +69,27 @@ var FOOD_PROFILES = {
   )
 }
 
+var SOCIAL_PROFILES = {
+  '气氛组': profile('气氛组组长', '你在朋友群里不是普通参与者，而是负责把场子点亮的人：朋友低气压时你会逗笑，群聊冷掉时你会接梗，约局没方向时你会让讨论热起来。你的选择集中在热场、鼓励和快乐扩散，所以结果落在「气氛组组长」。高光是感染力强，提醒是你也可以偶尔不营业。', '🎉', '气氛组'),
+  '倾听者': profile('树洞倾听担当', '你是朋友最容易放心倾诉的类型：不急着评价、不抢着输出，能把别人的情绪稳稳接住。你的选择集中在倾听、陪伴和确认感受，所以结果落在「树洞倾听担当」。高光是温柔可靠，提醒是别只做别人的树洞，你也需要被听见。', '👂', '倾听者'),
+  '行动派': profile('说走就走行动派', '你在朋友关系里不是只会讨论的人，而是能把想法变成行动的人：查路线、约时间、拉人出门、当面解决问题。你的选择集中在执行、落地和推进，所以结果落在「说走就走行动派」。高光是靠谱不拖，提醒是偶尔也允许计划慢一点。', '🏃', '行动派'),
+  '军师型': profile('朋友圈军师', '你是朋友遇到问题时会想起的分析型搭子：能拆利弊、理线索、给方向，把混乱的局面讲清楚。你的选择集中在判断、分析和方案感，所以结果落在「朋友圈军师」。高光是洞察力强，提醒是别把自己只放在解决问题的位置。', '🧠', '军师型')
+}
+
+var DAILY_SCORE_PROFILES = [
+  profile('佛系待机中', '你今天更像低压待机模式：不想被催，也不想强行满格营业。你的低分选择集中在想休息、慢启动和少消耗，所以结果落在「佛系待机中」。今天的重点不是冲刺，而是先用一个很小的动作把自己温柔启动。', '🦥', '低压待机'),
+  profile('半上线半摸鱼', '你今天不是完全没状态，而是只想把电量花在必要的地方。你的选择落在负责和放空之间，所以结果是「半上线半摸鱼」。适合该做的先做一点，该休息的也别有负担。', '🐱', '弹性节奏'),
+  profile('满格在线中', '你今天的校园状态比较在线：能听课、能聊天、也能把重要事情往前推。你的选择集中在主动参与和正常发挥，所以结果是「满格在线中」。趁状态好推进重点，但记得留一点余电。', '⚡', '满格在线'),
+  profile('超频运行中', '你今天能量很冲，像开了高性能模式：什么都想参与，什么都想试试。你的高分选择集中在快节奏和高参与，所以结果是「超频运行中」。高光是爆发力强，提醒是记得给自己降温。', '🚀', '高能超频')
+]
+
+var RECHARGE_SCORE_PROFILES = [
+  profile('电量严重不足', '你今天的电量已经偏低，不适合继续硬撑。你的选择集中在疲惫、拖延和低启动，所以结果落在「电量严重不足」。先休息回血，再做最低限度任务，会比逼自己满血更现实。', '🪫', '红灯电量'),
+  profile('半血待机中', '你不是彻底关机，只是现在需要低速启动。你的选择显示你能撑一点，但不适合一口气接大任务，所以结果是「半血待机中」。先做一个 5 分钟小任务，状态会慢慢回来。', '🔋', '半血待机'),
+  profile('电量充足', '你今天的电量处在可用区间，适合稳定推进积压的小事。你的选择偏向能执行、能恢复、不过度摆烂，所以结果是「电量充足」。别急着爆发，稳定输出更适合你。', '🔋', '稳定输出'),
+  profile('满电出发', '你今天像刚充满电，适合处理一直拖着的重点任务。你的高分选择集中在主动解决和快速推进，所以结果是「满电出发」。高光是执行窗口打开，提醒是别把满电一次用空。', '⚡', '满电输出')
+]
+
 function getDomain(test) {
   var text = [(test && test.category) || '', (test && test.title) || ''].join('')
   if (includesAny(text, ['干饭', '奶茶', '食堂', '饮食', '零食'])) return 'food'
@@ -92,13 +113,26 @@ function getDimensionFallbackProfile(test, dimension) {
   var domain = getDomain(test)
   if (domain === 'persona') return PERSONA_PROFILES[dimension] || null
   if (domain === 'food') return FOOD_PROFILES[dimension] || null
+  if (domain === 'social') return SOCIAL_PROFILES[dimension] || null
   return null
+}
+
+function scoreProfileByRatio(profiles, ratio) {
+  if (ratio <= 35) return profiles[0]
+  if (ratio <= 65) return profiles[1]
+  if (ratio <= 85) return profiles[2]
+  return profiles[3]
 }
 
 function getScoreFallbackProfile(test, score, questionCount) {
   var domain = getDomain(test)
   var maxScore = Math.max((questionCount || 5) * 4, 1)
   var ratio = Math.round((score / maxScore) * 100)
+  var text = [(test && test.category) || '', (test && test.title) || ''].join('')
+  if (domain === 'state') {
+    if (includesAny(text, ['摆烂', '回血', '电量'])) return scoreProfileByRatio(RECHARGE_SCORE_PROFILES, ratio)
+    return scoreProfileByRatio(DAILY_SCORE_PROFILES, ratio)
+  }
   if (domain === 'persona') {
     if (ratio <= 30) return PERSONA_PROFILES['透明人']
     if (ratio <= 50) return PERSONA_PROFILES['摸鱼王']

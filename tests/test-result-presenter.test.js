@@ -200,6 +200,52 @@ run('generic food title uses answer dimensions to show food personas without cam
   assert.ok(snack.summaryText.indexOf('零食') >= 0)
 })
 
+run('generic social title uses answer dimensions to show concrete friend role', function () {
+  var result = presenter.normalizeResult({
+    testTitle: '你的朋友搭子角色',
+    category: '朋友搭子',
+    resultTitle: '你的校园搭子属性已生成',
+    resultDesc: '感谢你的参与，你已完成本次测试。',
+    resultEmoji: '⭐',
+    questionCount: 3,
+    answerSummary: [
+      { question: '朋友心情不好来找你？', selectedText: '拉着TA出去走走', dimension: '行动派' },
+      { question: '群聊约周末去哪玩？', selectedText: '直接查好路线和时间', dimension: '行动派' },
+      { question: '朋友之间发生矛盾？', selectedText: '约大家当面聊', dimension: '行动派' }
+    ]
+  })
+
+  assert.strictEqual(result.resultTitle, '说走就走行动派')
+  assert.ok(result.summaryText.indexOf('行动') >= 0 || result.summaryText.indexOf('执行') >= 0)
+  assert.ok(result.shareLine.indexOf('已生成') === -1)
+})
+
+run('generic daily and recharge score results become concrete score-band reports', function () {
+  var daily = presenter.normalizeResult({
+    testTitle: '今日校园状态检测',
+    category: '今日校园状态',
+    resultTitle: '你的今日校园状态已生成',
+    resultDesc: '感谢你的参与，你已完成本次测试。',
+    resultEmoji: '⭐',
+    score: 5,
+    questionCount: 5
+  })
+  var recharge = presenter.normalizeResult({
+    testTitle: '摆烂回血指数测试',
+    category: '摆烂回血',
+    resultTitle: '结果已生成',
+    resultDesc: '感谢你的参与，你已完成本次测试。',
+    resultEmoji: '⭐',
+    score: 20,
+    questionCount: 5
+  })
+
+  assert.strictEqual(daily.resultTitle, '佛系待机中')
+  assert.strictEqual(recharge.resultTitle, '满电出发')
+  assert.ok(daily.summaryText.indexOf('已生成') === -1)
+  assert.ok(recharge.shareLine.indexOf('结果已生成') === -1)
+})
+
 run('missing raw result fields still produce safe fallback report', function () {
   var result = presenter.normalizeResult({})
   assert.strictEqual(result.resultTitle, '你的校园趣测结果已生成')

@@ -226,6 +226,7 @@ function inferDomain(result) {
   var text = [result.category || '', result.testTitle || '', result.resultTitle || ''].join('')
   if (includesAny(text, ['消费', '购物', '预算', '花钱', '下单', '价格', '性价比'])) return 'consume'
   if (includesAny(text, ['干饭', '奶茶', '食堂', '饮食', '零食'])) return 'food'
+  if (includesAny(text, ['今日校园状态', '今日状态'])) return 'daily'
   if (includesAny(text, ['人格', '性格', '人设'])) return 'persona'
   if (includesAny(text, ['朋友', '社交', '搭子'])) return 'social'
   if (includesAny(text, ['状态', '电量', '回血', '摆烂'])) return 'recharge'
@@ -246,6 +247,7 @@ function domainLabel(domain) {
     persona: '人格倾向',
     food: '干饭补给',
     social: '关系角色',
+    daily: '今日状态',
     recharge: '能量状态',
     general: '综合倾向'
   }
@@ -318,7 +320,13 @@ function buildDimensionGeneratedProfile(result, domain) {
     '零食囤积': ['课桌零食库管理员', '🍫', '零食补给'],
     '随缘吃啥': ['佛系饮食派', '🍃', '随缘不纠结']
   }
-  var config = domain === 'persona' ? personaTitles[dim] : foodTitles[dim]
+  var socialTitles = {
+    '气氛组': ['气氛组组长', '🎉', '快乐扩散'],
+    '倾听者': ['树洞倾听担当', '👂', '温柔接住'],
+    '行动派': ['说走就走行动派', '🏃', '靠谱执行'],
+    '军师型': ['朋友圈军师', '🧠', '理性分析']
+  }
+  var config = domain === 'persona' ? personaTitles[dim] : (domain === 'food' ? foodTitles[dim] : socialTitles[dim])
   if (!config) return null
   return buildGeneratedProfileFromTitle(config[0], config[1], config[2])
 }
@@ -335,6 +343,16 @@ function buildScoreGeneratedProfile(result, domain, ratio) {
     else if (ratio <= 50) config = ['课桌零食库管理员', '🍫', '零食补给']
     else if (ratio <= 75) config = ['食堂干饭王', '🍚', '正餐能量']
     else config = ['奶茶续命型选手', '🧋', '甜度补给']
+  } else if (domain === 'daily') {
+    if (ratio <= 35) config = ['佛系待机中', '🦥', '低压待机']
+    else if (ratio <= 65) config = ['半上线半摸鱼', '🐱', '弹性节奏']
+    else if (ratio <= 85) config = ['满格在线中', '⚡', '满格在线']
+    else config = ['超频运行中', '🚀', '高能超频']
+  } else if (domain === 'recharge') {
+    if (ratio <= 35) config = ['电量严重不足', '🪫', '红灯电量']
+    else if (ratio <= 65) config = ['半血待机中', '🔋', '半血待机']
+    else if (ratio <= 85) config = ['电量充足', '🔋', '稳定输出']
+    else config = ['满电出发', '⚡', '满电输出']
   }
   if (!config) return null
   return buildGeneratedProfileFromTitle(config[0], config[1], config[2])
@@ -343,9 +361,11 @@ function buildScoreGeneratedProfile(result, domain, ratio) {
 function buildGenericProfile(result) {
   var domain = inferDomain(result)
   var ratio = scoreRatio(result)
-  if (domain === 'persona' || domain === 'food') {
+  if (domain === 'persona' || domain === 'food' || domain === 'social') {
     var dimensionProfile = buildDimensionGeneratedProfile(result, domain)
     if (dimensionProfile) return dimensionProfile
+  }
+  if (domain === 'persona' || domain === 'food' || domain === 'daily' || domain === 'recharge') {
     var scoreProfile = buildScoreGeneratedProfile(result, domain, ratio)
     if (scoreProfile) return scoreProfile
   }

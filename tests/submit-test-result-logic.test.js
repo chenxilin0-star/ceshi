@@ -49,6 +49,20 @@ var foodQuestions = [
   { options: [{ text: '饮料冰柜', dimension: '奶茶续命' }, { text: '夜宵地图', dimension: '干饭第一' }, { text: '分享薯片', dimension: '零食囤积' }, { text: '有啥吃啥', dimension: '随缘吃啥' }] }
 ]
 
+var socialQuestions = [
+  { options: [{ text: '逗TA开心', dimension: '气氛组' }, { text: '安静听完', dimension: '倾听者' }, { text: '拉TA出门', dimension: '行动派' }, { text: '分析问题', dimension: '军师型' }] },
+  { options: [{ text: '让讨论热闹起来', dimension: '气氛组' }, { text: '看大家想法', dimension: '倾听者' }, { text: '查路线时间', dimension: '行动派' }, { text: '分析方案', dimension: '军师型' }] },
+  { options: [{ text: '缓和气氛', dimension: '气氛组' }, { text: '分别倾听', dimension: '倾听者' }, { text: '约大家当面聊', dimension: '行动派' }, { text: '理清经过', dimension: '军师型' }] }
+]
+
+var scoreQuestions = [
+  { options: [{ text: '完全没电', score: 1 }, { text: '勉强启动', score: 2 }, { text: '正常发挥', score: 3 }, { text: '满格在线', score: 4 }] },
+  { options: [{ text: '想躺平', score: 1 }, { text: '慢慢做', score: 2 }, { text: '列清单做', score: 3 }, { text: '直接开干', score: 4 }] },
+  { options: [{ text: '拒绝出门', score: 1 }, { text: '考虑一下', score: 2 }, { text: '出去走走', score: 3 }, { text: '立刻出发', score: 4 }] },
+  { options: [{ text: '想关机', score: 1 }, { text: '还凑合', score: 2 }, { text: '挺充实', score: 3 }, { text: '超有劲', score: 4 }] },
+  { options: [{ text: '1 分', score: 1 }, { text: '4 分', score: 2 }, { text: '7 分', score: 3 }, { text: '10 分', score: 4 }] }
+]
+
 run('校园人设按选项维度生成不同人设结果，不返回测试完成', function () {
   var extrovert = resultLogic.calculateTestResult(personaTest, personaQuestions, [0, 0, 0])
   var quiet = resultLogic.calculateTestResult(personaTest, personaQuestions, [3, 3, 3])
@@ -120,4 +134,41 @@ run('score-mode legacy campus persona also returns a concrete class role instead
   assert.ok(concreteTitles.indexOf(result.resultTitle) >= 0)
   assert.ok(result.resultTitle.indexOf('已生成') === -1)
   assert.ok(result.resultDesc.indexOf('测试完成') === -1)
+})
+
+run('朋友搭子泛化结果也按选项维度生成具体角色', function () {
+  var socialTest = {
+    title: '你的朋友搭子角色',
+    category: '朋友搭子',
+    scoringType: 'dimension',
+    resultRules: [{ dimension: '行动派', title: '你的校园搭子属性已生成', description: '感谢你的参与，你已完成本次测试。', emoji: '🌟' }]
+  }
+  var result = resultLogic.calculateTestResult(socialTest, socialQuestions, [2, 2, 2])
+
+  assert.strictEqual(result.resultTitle, '说走就走行动派')
+  assert.ok(result.resultDesc.indexOf('执行') >= 0 || result.resultDesc.indexOf('行动') >= 0)
+  assert.strictEqual(result.dominantDimension, '行动派')
+  assert.ok(result.resultTitle.indexOf('已生成') === -1)
+})
+
+run('今日状态和摆烂回血泛化结果按分数区间生成具体状态', function () {
+  var dailyTest = {
+    title: '今日校园状态检测',
+    category: '今日校园状态',
+    scoringType: 'score',
+    resultRules: [{ minScore: 0, maxScore: 20, title: '你的今日校园状态已生成', description: '感谢你的参与，你已完成本次测试。', emoji: '🌟' }]
+  }
+  var rechargeTest = {
+    title: '摆烂回血指数测试',
+    category: '摆烂回血',
+    scoringType: 'score',
+    resultRules: [{ minScore: 0, maxScore: 20, title: '结果已生成', description: '感谢你的参与，你已完成本次测试。', emoji: '🌟' }]
+  }
+  var low = resultLogic.calculateTestResult(dailyTest, scoreQuestions, [0, 0, 0, 0, 0])
+  var high = resultLogic.calculateTestResult(rechargeTest, scoreQuestions, [3, 3, 3, 3, 3])
+
+  assert.strictEqual(low.resultTitle, '佛系待机中')
+  assert.strictEqual(high.resultTitle, '满电出发')
+  assert.ok(low.resultDesc.indexOf('测试完成') === -1)
+  assert.ok(high.resultDesc.indexOf('已完成') === -1)
 })
