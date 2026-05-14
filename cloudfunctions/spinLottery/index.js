@@ -3,6 +3,7 @@ const cloud = require('wx-server-sdk')
 cloud.init({ env: cloud.DYNAMIC_CURRENT_ENV })
 const db = cloud.database()
 const _ = db.command
+const lotteryLogic = require('./lotteryLogic')
 
 // 生成随机核销码
 function generateVerifyCode() {
@@ -90,42 +91,22 @@ exports.main = async (event, context) => {
     records = []
   }
 
-  var freeUsed = records.filter(function (r) { return r.source === 'free' }).length
-  var shareUsed = records.filter(function (r) { return r.source === 'share' }).length
-  var retryUsed = records.filter(function (r) { return r.source === 'retry' }).length
-
-  // 6. 校验抽奖次数
-  var canSpin = false
-  var actualSource = source
-
-  // 检查是否有"再来一次"的中奖记录（source不是retry，说明是正常抽奖中的）
-  var hasRetryPrize = records.some(function (r) {
-    return r.prizeType === 'retry' && r.source !== 'retry'
-  })
-
-  if (source === 'retry') {
-    if (!hasRetryPrize) {
-      return { code: -3, msg: '没有可用的再来一次机会' }
-    }
-    if (retryUsed > 0) {
-      return { code: -3, msg: '再来一次机会已使用' }
-    }
-    canSpin = true
-  } else if (source === 'share') {
-    if (shareUsed >= 2) {
-      return { code: -3, msg: '今日分享抽奖次数已用完' }
-    }
-    canSpin = true
-  } else {
-    if (freeUsed >= 1) {
-      return { code: -3, msg: '今日免费抽奖次数已用完' }
-    }
-    canSpin = true
-    actualSource = 'free'
+  var shareEarned = 0
+  try {
+    var shareRecords = await db.collection('lotteryShareChances').where({
+      _openid: OPENID,
+      createTime: _.gte(dayStart)
+    }).get()
+    shareEarned = Math.min(2, (shareRecords.data || []).length)
+  } catch (e) {
+    shareEarned = 0
   }
 
-  if (!canSpin) {
-    return { code: -3, msg: '没有抽奖机会' }
+  // 6. 校验抽奖次数：默认只有1次免费机会，分享成功后才增加分享机会
+  var actualSource = source === 'share' || source === 'retry' ? source : 'free'
+  var sourceCheck = lotteryLogic.canUseSource(actualSource, records, { earned: shareEarned })
+  if (!sourceCheck.ok) {
+    return { code: -3, msg: sourceCheck.msg || '没有抽奖机会' }
   }
 
   // 7. 抽奖 - 按概率加权随机选择
@@ -254,17 +235,7 @@ exports.main = async (event, context) => {
   // type='none' 或 'retry'：不做任何操作
 
   // 10. 计算剩余次数
-  var newFreeUsed = actualSource === 'free' ? freeUsed + 1 : freeUsed
-  var newShareUsed = actualSource === 'share' ? shareUsed + 1 : shareUsed
-  var newRetryUsed = actualSource === 'retry' ? retryUsed + 1 : retryUsed
-
-  var remainFree = newFreeUsed >= 1 ? 0 : 1
-  var remainShare = 2 - newShareUsed
-  var remainRetry = 0
-
-  if (prizeType === 'retry' && retryUsed === 0) {
-    remainRetry = 1
-  }
+  var remain = lotteryLogic.calculatePostSpinRemain(records, { earned: shareEarned }, actualSource, prizeType)
 
   return {
     code: 0,
@@ -277,10 +248,6 @@ exports.main = async (event, context) => {
       bgColor: selectedPrize.bgColor || '#FFE0EB'
     },
     pointsEarned: pointsEarned,
-    remainChances: {
-      free: remainFree,
-      share: Math.max(0, remainShare),
-      retry: remainRetry
-    }
+    remainChances: remain
   }
 }

@@ -175,33 +175,20 @@ Page({
       return
     }
 
-    var db = wx.cloud.database()
-    var _ = db.command
-    var today = new Date()
-    var todayStr = today.getFullYear() + '-' +
-      String(today.getMonth() + 1).padStart(2, '0') + '-' +
-      String(today.getDate()).padStart(2, '0')
-    var dayStart = new Date(todayStr + 'T00:00:00')
-
-    db.collection('lotteryRecords').where({
-      _openid: getApp().globalData.userInfo._openid,
-      createTime: _.gte(dayStart)
-    }).get().then(function (res) {
-      var records = res.data || []
-      var freeUsed = records.filter(function (r) { return r.source === 'free' }).length
-      var shareUsed = records.filter(function (r) { return r.source === 'share' }).length
-      var hasRetry = records.some(function (r) { return r.prizeType === 'retry' && r.source !== 'retry' })
-      var retryUsed = records.filter(function (r) { return r.source === 'retry' }).length
-
-      var remainFree = freeUsed >= 1 ? 0 : 1
-      var remainShare = Math.max(0, 2 - shareUsed)
-      var remainRetry = (hasRetry && retryUsed === 0) ? 1 : 0
-      var total = remainFree + remainShare + remainRetry
-
-      that.setData({
-        remainChances: { free: remainFree, share: remainShare, retry: remainRetry },
-        totalChances: total
-      })
+    util.callFunction('getLotteryChances').then(function (res) {
+      if (res.code === 0 && res.remainChances) {
+        var chances = res.remainChances
+        var total = chances.free + chances.share + chances.retry
+        that.setData({
+          remainChances: chances,
+          totalChances: total
+        })
+      } else {
+        that.setData({
+          remainChances: { free: 1, share: 0, retry: 0 },
+          totalChances: 1
+        })
+      }
       if (callback) callback()
     }).catch(function () {
       that.setData({
@@ -258,16 +245,17 @@ Page({
 
       // 通过 order 匹配转盘扇区位置
       var slotIndex = 0
-      var targetOrder = prize.order || 1
+      var targetOrder = Number(prize.order || 1)
       for (var j = 0; j < wheelItems.length; j++) {
-        if (wheelItems[j].order === targetOrder) {
+        if (Number(wheelItems[j].order) === targetOrder) {
           slotIndex = j
           break
         }
       }
 
-      // 指针固定在12点方向，扇区从12点顺时针排列
-      var targetAngle = 360 - (slotIndex * DEG_PER_SLOT + DEG_PER_SLOT / 2)
+      // 指针固定在12点方向，按实际奖品 order 对齐对应扇区，避免视觉扇区与弹窗奖品不一致
+      var slotDeg = 360 / (wheelItems.length || 8)
+      var targetAngle = (360 - (slotIndex * slotDeg + slotDeg / 2)) % 360
 
       // 先把上次的旋转对齐到整圈，再加 6 圈 + 目标角度
       var baseRotation = Math.ceil(that.data.wheelRotation / 360) * 360
@@ -315,11 +303,29 @@ Page({
   },
 
   onShareAppMessage: function () {
+    var that = this
     this.setData({ pendingShareSpin: true })
+    if (getApp().isLoggedIn()) {
+      util.callFunction('recordLotteryShare', { scene: 'share_app_message' }).then(function (res) {
+        that.setData({ pendingShareSpin: false })
+        if (res.code === 0) {
+          wx.showToast({ title: res.added ? '已获得1次额外抽奖机会' : '今日分享机会已达上限', icon: 'none' })
+          that.checkChances()
+        }
+      }).catch(function () {
+        that.setData({ pendingShareSpin: false })
+      })
+    }
     return util.shareToFriend('快来趣测星球抽奖，赢积分换好礼！', '/pages/index/index')
   },
 
   onShareTimeline: function () {
+    if (getApp().isLoggedIn()) {
+      var that = this
+      util.callFunction('recordLotteryShare', { scene: 'share_timeline' }).then(function () {
+        that.checkChances()
+      }).catch(function () {})
+    }
     return util.shareToTimeline('快来趣测星球抽奖，赢积分换好礼！')
   }
 })
