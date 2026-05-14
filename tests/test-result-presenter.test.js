@@ -95,9 +95,9 @@ run('generic completion title in consumption test is converted into a useful mat
 
 run('generic campus persona title uses answer dimensions to show concrete different personas', function () {
   var active = presenter.normalizeResult({
-    testTitle: '你的校园隐藏人设',
+    testTitle: '看看你的班级隐藏角色',
     category: '校园人设',
-    resultTitle: '测试完成',
+    resultTitle: '你的校园隐藏人设已生成',
     resultDesc: '感谢你的参与，你已完成本次测试。',
     resultEmoji: '⭐',
     questionCount: 3,
@@ -108,9 +108,9 @@ run('generic campus persona title uses answer dimensions to show concrete differ
     ]
   })
   var quiet = presenter.normalizeResult({
-    testTitle: '你的校园隐藏人设',
+    testTitle: '看看你的班级隐藏角色',
     category: '校园人设',
-    resultTitle: '测试完成',
+    resultTitle: '你的校园隐藏人设已生成',
     resultDesc: '感谢你的参与，你已完成本次测试。',
     resultEmoji: '⭐',
     questionCount: 3,
@@ -126,6 +126,41 @@ run('generic campus persona title uses answer dimensions to show concrete differ
   assert.notStrictEqual(active.insightCards[0].text, quiet.insightCards[0].text)
   assert.ok(active.summaryText.indexOf('气氛') >= 0 || active.summaryText.indexOf('接梗') >= 0)
   assert.ok(quiet.summaryText.indexOf('观察') >= 0 || quiet.summaryText.indexOf('安静') >= 0)
+})
+
+run('legacy generic campus persona without dimensions still becomes a concrete class role', function () {
+  var result = presenter.normalizeResult({
+    testTitle: '性格色彩测试',
+    category: '校园人设',
+    resultTitle: '你的校园隐藏人设已生成',
+    resultDesc: '你刚刚完成了 5 道题，系统根据你的选择生成了「你的校园隐藏人设已生成」。',
+    resultEmoji: '🌟',
+    score: 13,
+    questionCount: 5
+  })
+  var concreteTitles = ['班级显眼包', '专业摸鱼选手', '低调实力派', '隐藏观察者']
+
+  assert.ok(concreteTitles.indexOf(result.resultTitle) >= 0)
+  assert.ok(result.resultTitle.indexOf('已生成') === -1)
+  assert.ok(result.summaryText.indexOf('你的校园隐藏人设已生成') === -1)
+  assert.ok(result.shareLine.indexOf(result.resultTitle) >= 0)
+  assert.notStrictEqual(result.insightCards[0].text, result.insightCards[1].text)
+  assert.strictEqual(result.testTitle, '看看你的班级隐藏角色')
+})
+
+run('old campus persona test title is normalized to the requested class-role title', function () {
+  var result = presenter.normalizeResult({
+    testTitle: '你的校园隐藏人设',
+    category: '校园人设',
+    resultTitle: '测试完成',
+    resultDesc: '感谢你的参与，你已完成本次测试。',
+    resultEmoji: '⭐',
+    score: 10,
+    questionCount: 5
+  })
+
+  assert.strictEqual(result.testTitle, '看看你的班级隐藏角色')
+  assert.ok(result.resultTitle === '专业摸鱼选手' || result.resultTitle === '低调实力派' || result.resultTitle === '隐藏观察者' || result.resultTitle === '班级显眼包')
 })
 
 run('generic food title uses answer dimensions to show food personas without campus-persona overlap', function () {

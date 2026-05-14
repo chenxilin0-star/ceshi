@@ -99,6 +99,18 @@ function getScoreFallbackProfile(test, score, questionCount) {
   var domain = getDomain(test)
   var maxScore = Math.max((questionCount || 5) * 4, 1)
   var ratio = Math.round((score / maxScore) * 100)
+  if (domain === 'persona') {
+    if (ratio <= 30) return PERSONA_PROFILES['透明人']
+    if (ratio <= 50) return PERSONA_PROFILES['摸鱼王']
+    if (ratio <= 75) return PERSONA_PROFILES['学霸型']
+    return PERSONA_PROFILES['显眼包']
+  }
+  if (domain === 'food') {
+    if (ratio <= 30) return FOOD_PROFILES['随缘吃啥']
+    if (ratio <= 50) return FOOD_PROFILES['零食囤积']
+    if (ratio <= 75) return FOOD_PROFILES['干饭第一']
+    return FOOD_PROFILES['奶茶续命']
+  }
   if (domain === 'consume') {
     if (ratio <= 35) return profile('精打细算型消费者', '你更偏向预算优先和必要性判断，购买前会先比较、先确认是否真的需要。优势是少踩冲动消费的坑，提醒是别把所有喜欢都压成“没必要”。', '🧮', '')
     if (ratio <= 65) return profile('理性平衡型消费者', '你会在预算、实用和喜欢之间找平衡：不盲目跟风，也愿意为真正高频使用或让自己开心的东西买单。', '⚖️', '')
@@ -116,12 +128,12 @@ function buildResultDescription(test, resultTitle, score, questionCount) {
 
 function isGenericTitle(title) {
   title = String(title || '').replace(/\s/g, '')
-  return !title || title === '测试完成' || title === '完成测试' || title === '已完成' || title === '结果已生成' || title === '你的校园趣测结果已生成'
+  return !title || title === '测试完成' || title === '完成测试' || title === '已完成' || title === '结果已生成' || title === '你的校园趣测结果已生成' || title === '你的校园隐藏人设已生成' || title === '干饭奶茶人格已生成' || title === '你的校园搭子属性已生成' || title === '你的今日校园状态已生成'
 }
 
 function isGenericDescription(desc) {
   desc = String(desc || '')
-  return !desc || desc.indexOf('感谢你的参与') >= 0 || desc.indexOf('已完成本次测试') >= 0
+  return !desc || desc.indexOf('感谢你的参与') >= 0 || desc.indexOf('已完成本次测试') >= 0 || desc.indexOf('你的校园隐藏人设已生成') >= 0
 }
 
 function matchRuleByDimension(test, dimension) {
@@ -199,8 +211,8 @@ function calculateScoreResult(test, questions, answers) {
     resultTitle: resultTitle,
     resultDesc: resultDesc,
     resultEmoji: resultEmoji,
-    dominantDimension: '',
-    dimensionCounts: {}
+    dominantDimension: (fallback && fallback.dimension) || '',
+    dimensionCounts: (fallback && fallback.dimension) ? ((function () { var data = {}; data[fallback.dimension] = 1; return data })()) : {}
   }
 }
 

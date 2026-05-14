@@ -214,12 +214,12 @@ function getProfile(resultTitle) {
 function isGenericResultTitle(title) {
   title = String(title || '').replace(/\s/g, '')
   if (!title) return true
-  return title === '测试完成' || title === '完成测试' || title === '已完成' || title === '结果已生成' || title === '你的校园趣测结果已生成'
+  return title === '测试完成' || title === '完成测试' || title === '已完成' || title === '结果已生成' || title === '你的校园趣测结果已生成' || title === '你的校园隐藏人设已生成' || title === '干饭奶茶人格已生成' || title === '你的校园搭子属性已生成' || title === '你的今日校园状态已生成'
 }
 
 function isGenericDescription(desc) {
   desc = String(desc || '')
-  return !desc || desc.indexOf('感谢你的参与') >= 0 || desc.indexOf('已完成本次测试') >= 0 || desc.indexOf('这份报告会把你的选择整理') >= 0
+  return !desc || desc.indexOf('感谢你的参与') >= 0 || desc.indexOf('已完成本次测试') >= 0 || desc.indexOf('这份报告会把你的选择整理') >= 0 || desc.indexOf('你的校园隐藏人设已生成') >= 0
 }
 
 function inferDomain(result) {
@@ -250,6 +250,13 @@ function domainLabel(domain) {
     general: '综合倾向'
   }
   return labels[domain] || '综合倾向'
+}
+
+function normalizeTestTitleForDisplay(result) {
+  var domain = inferDomain(result)
+  var title = result.testTitle || ''
+  if (domain === 'persona' && includesAny(title, ['性格色彩', '校园隐藏人设', '校园人格盲盒'])) return '看看你的班级隐藏角色'
+  return title
 }
 
 function dominantDimensionFromResult(result) {
@@ -316,12 +323,31 @@ function buildDimensionGeneratedProfile(result, domain) {
   return buildGeneratedProfileFromTitle(config[0], config[1], config[2])
 }
 
+function buildScoreGeneratedProfile(result, domain, ratio) {
+  var config = null
+  if (domain === 'persona') {
+    if (ratio <= 30) config = ['隐藏观察者', '👻', '安静观察']
+    else if (ratio <= 50) config = ['专业摸鱼选手', '🐟', '节能摸鱼']
+    else if (ratio <= 75) config = ['低调实力派', '📚', '稳定输出']
+    else config = ['班级显眼包', '🦚', '气氛发动机']
+  } else if (domain === 'food') {
+    if (ratio <= 30) config = ['佛系饮食派', '🍃', '随缘不纠结']
+    else if (ratio <= 50) config = ['课桌零食库管理员', '🍫', '零食补给']
+    else if (ratio <= 75) config = ['食堂干饭王', '🍚', '正餐能量']
+    else config = ['奶茶续命型选手', '🧋', '甜度补给']
+  }
+  if (!config) return null
+  return buildGeneratedProfileFromTitle(config[0], config[1], config[2])
+}
+
 function buildGenericProfile(result) {
   var domain = inferDomain(result)
   var ratio = scoreRatio(result)
   if (domain === 'persona' || domain === 'food') {
     var dimensionProfile = buildDimensionGeneratedProfile(result, domain)
     if (dimensionProfile) return dimensionProfile
+    var scoreProfile = buildScoreGeneratedProfile(result, domain, ratio)
+    if (scoreProfile) return scoreProfile
   }
   if (domain === 'consume') {
     if (ratio <= 35) {
@@ -517,6 +543,7 @@ function normalizeResult(result) {
   normalized.testTitle = normalized.testTitle || '校园趣测'
   normalized.score = typeof normalized.score === 'number' ? normalized.score : parseInt(normalized.score || 0, 10) || 0
   normalized.questionCount = normalized.questionCount || 0
+  normalized.testTitle = normalizeTestTitleForDisplay(normalized)
 
   var generatedProfile = null
   if (isGenericResultTitle(normalized.resultTitle) || isGenericDescription(normalized.resultDesc)) {

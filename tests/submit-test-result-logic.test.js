@@ -99,3 +99,25 @@ run('数据库规则如果只是测试完成，也按维度改成真实结果', 
   assert.strictEqual(result.resultTitle, '奶茶续命型选手')
   assert.ok(result.resultDesc.indexOf('奶茶') >= 0)
 })
+
+run('score-mode legacy campus persona also returns a concrete class role instead of generated copy', function () {
+  var legacyPersonaTest = {
+    title: '性格色彩测试',
+    category: '校园人设',
+    scoringType: 'score',
+    resultRules: [{ minScore: 0, maxScore: 20, title: '你的校园隐藏人设已生成', description: '感谢你的参与，你已完成本次测试。', emoji: '🌟' }]
+  }
+  var questions = [
+    { options: [{ text: '安静观察', score: 1 }, { text: '主动带节奏', score: 4 }] },
+    { options: [{ text: '被@才出现', score: 1 }, { text: '群里刷屏', score: 4 }] },
+    { options: [{ text: '辅助支持', score: 1 }, { text: '抢答接梗', score: 4 }] },
+    { options: [{ text: '低头摸鱼', score: 2 }, { text: '认真整理', score: 3 }] },
+    { options: [{ text: '能躲就躲', score: 2 }, { text: '兜底质量', score: 3 }] }
+  ]
+  var result = resultLogic.calculateTestResult(legacyPersonaTest, questions, [1, 1, 1, 1, 1])
+  var concreteTitles = ['班级显眼包', '专业摸鱼选手', '低调实力派', '隐藏观察者']
+
+  assert.ok(concreteTitles.indexOf(result.resultTitle) >= 0)
+  assert.ok(result.resultTitle.indexOf('已生成') === -1)
+  assert.ok(result.resultDesc.indexOf('测试完成') === -1)
+})
