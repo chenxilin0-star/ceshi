@@ -91,10 +91,10 @@ Page({
     if (user && user.nickName && user.nickName !== '微信用户') {
       this.setData({ userInfo: user })
     }
-    this.checkChances()
     if (this.data.pendingShareSpin && getApp().isLoggedIn()) {
-      this.setData({ pendingShareSpin: false })
-      wx.showToast({ title: '获得1次额外抽奖机会！', icon: 'none' })
+      this.grantShareChance('share_return')
+    } else {
+      this.checkChances()
     }
   },
 
@@ -302,30 +302,27 @@ Page({
     this.doSpin('retry')
   },
 
-  onShareAppMessage: function () {
+  grantShareChance: function (scene) {
     var that = this
+    util.callFunction('recordLotteryShare', { scene: scene || 'share_return' }).then(function (res) {
+      that.setData({ pendingShareSpin: false })
+      if (res && res.code === 0) {
+        wx.showToast({ title: res.added ? '已获得1次额外抽奖机会' : '今日分享机会已达上限', icon: 'none' })
+      }
+      that.checkChances()
+    }).catch(function () {
+      that.setData({ pendingShareSpin: false })
+      that.checkChances()
+    })
+  },
+
+  onShareAppMessage: function () {
     this.setData({ pendingShareSpin: true })
-    if (getApp().isLoggedIn()) {
-      util.callFunction('recordLotteryShare', { scene: 'share_app_message' }).then(function (res) {
-        that.setData({ pendingShareSpin: false })
-        if (res.code === 0) {
-          wx.showToast({ title: res.added ? '已获得1次额外抽奖机会' : '今日分享机会已达上限', icon: 'none' })
-          that.checkChances()
-        }
-      }).catch(function () {
-        that.setData({ pendingShareSpin: false })
-      })
-    }
     return util.shareToFriend('快来趣测星球抽奖，赢积分换好礼！', '/pages/index/index')
   },
 
   onShareTimeline: function () {
-    if (getApp().isLoggedIn()) {
-      var that = this
-      util.callFunction('recordLotteryShare', { scene: 'share_timeline' }).then(function () {
-        that.checkChances()
-      }).catch(function () {})
-    }
+    this.setData({ pendingShareSpin: true })
     return util.shareToTimeline('快来趣测星球抽奖，赢积分换好礼！')
   }
 })
