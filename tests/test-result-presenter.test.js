@@ -93,6 +93,78 @@ run('generic completion title in consumption test is converted into a useful mat
   assert.ok(result.matchPercent >= 0 && result.matchPercent <= 100)
 })
 
+run('generic campus persona title uses answer dimensions to show concrete different personas', function () {
+  var active = presenter.normalizeResult({
+    testTitle: '你的校园隐藏人设',
+    category: '校园人设',
+    resultTitle: '测试完成',
+    resultDesc: '感谢你的参与，你已完成本次测试。',
+    resultEmoji: '⭐',
+    questionCount: 3,
+    answerSummary: [
+      { question: '老师提问时你通常会？', selectedText: '主动举手，甚至抢答', dimension: '显眼包' },
+      { question: '班级群里你通常会？', selectedText: '疯狂贡献表情包', dimension: '显眼包' },
+      { question: '小组作业你通常会？', selectedText: '主动当组长带节奏', dimension: '显眼包' }
+    ]
+  })
+  var quiet = presenter.normalizeResult({
+    testTitle: '你的校园隐藏人设',
+    category: '校园人设',
+    resultTitle: '测试完成',
+    resultDesc: '感谢你的参与，你已完成本次测试。',
+    resultEmoji: '⭐',
+    questionCount: 3,
+    answerSummary: [
+      { question: '老师提问时你通常会？', selectedText: '默默听别人回答', dimension: '透明人' },
+      { question: '班级群里你通常会？', selectedText: '有人@我才出现', dimension: '透明人' },
+      { question: '小组作业你通常会？', selectedText: '做辅助工作不主导', dimension: '透明人' }
+    ]
+  })
+
+  assert.strictEqual(active.resultTitle, '班级显眼包')
+  assert.strictEqual(quiet.resultTitle, '隐藏观察者')
+  assert.notStrictEqual(active.insightCards[0].text, quiet.insightCards[0].text)
+  assert.ok(active.summaryText.indexOf('气氛') >= 0 || active.summaryText.indexOf('接梗') >= 0)
+  assert.ok(quiet.summaryText.indexOf('观察') >= 0 || quiet.summaryText.indexOf('安静') >= 0)
+})
+
+run('generic food title uses answer dimensions to show food personas without campus-persona overlap', function () {
+  var milkTea = presenter.normalizeResult({
+    testTitle: '干饭奶茶人格测试',
+    category: '干饭奶茶',
+    resultTitle: '测试完成',
+    resultDesc: '感谢你的参与，你已完成本次测试。',
+    resultEmoji: '⭐',
+    questionCount: 3,
+    answerSummary: [
+      { question: '上午犯困你会？', selectedText: '偷偷下单一杯奶茶', dimension: '奶茶续命' },
+      { question: '中午动力是什么？', selectedText: '奶茶店出新品了', dimension: '奶茶续命' },
+      { question: '朋友问吃什么？', selectedText: '先去买杯奶茶再说', dimension: '奶茶续命' }
+    ]
+  })
+  var snack = presenter.normalizeResult({
+    testTitle: '干饭奶茶人格测试',
+    category: '干饭奶茶',
+    resultTitle: '测试完成',
+    resultDesc: '感谢你的参与，你已完成本次测试。',
+    resultEmoji: '⭐',
+    questionCount: 3,
+    answerSummary: [
+      { question: '上午犯困你会？', selectedText: '从抽屉摸出零食', dimension: '零食囤积' },
+      { question: '放学路过小卖部？', selectedText: '多拿几包零食', dimension: '零食囤积' },
+      { question: '晚自习饿了？', selectedText: '掏出小饼干', dimension: '零食囤积' }
+    ]
+  })
+  var personaTitles = ['班级显眼包', '专业摸鱼选手', '低调实力派', '隐藏观察者']
+
+  assert.strictEqual(milkTea.resultTitle, '奶茶续命型选手')
+  assert.strictEqual(snack.resultTitle, '课桌零食库管理员')
+  assert.strictEqual(personaTitles.indexOf(milkTea.resultTitle), -1)
+  assert.strictEqual(personaTitles.indexOf(snack.resultTitle), -1)
+  assert.ok(milkTea.summaryText.indexOf('奶茶') >= 0)
+  assert.ok(snack.summaryText.indexOf('零食') >= 0)
+})
+
 run('missing raw result fields still produce safe fallback report', function () {
   var result = presenter.normalizeResult({})
   assert.strictEqual(result.resultTitle, '你的校园趣测结果已生成')

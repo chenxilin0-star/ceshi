@@ -225,6 +225,7 @@ function isGenericDescription(desc) {
 function inferDomain(result) {
   var text = [result.category || '', result.testTitle || '', result.resultTitle || ''].join('')
   if (includesAny(text, ['消费', '购物', '预算', '花钱', '下单', '价格', '性价比'])) return 'consume'
+  if (includesAny(text, ['干饭', '奶茶', '食堂', '饮食', '零食'])) return 'food'
   if (includesAny(text, ['人格', '性格', '人设'])) return 'persona'
   if (includesAny(text, ['朋友', '社交', '搭子'])) return 'social'
   if (includesAny(text, ['状态', '电量', '回血', '摆烂'])) return 'recharge'
@@ -243,6 +244,7 @@ function domainLabel(domain) {
   var labels = {
     consume: '消费决策',
     persona: '人格倾向',
+    food: '干饭补给',
     social: '关系角色',
     recharge: '能量状态',
     general: '综合倾向'
@@ -250,9 +252,77 @@ function domainLabel(domain) {
   return labels[domain] || '综合倾向'
 }
 
+function dominantDimensionFromResult(result) {
+  if (result.dominantDimension) return result.dominantDimension
+  var counts = result.dimensionCounts || {}
+  var keys = Object.keys(counts)
+  var best = ''
+  var bestCount = 0
+  for (var i = 0; i < keys.length; i++) {
+    if (counts[keys[i]] > bestCount) {
+      best = keys[i]
+      bestCount = counts[keys[i]]
+    }
+  }
+  if (best) return best
+  var answerSummary = result.answerSummary || []
+  for (var j = 0; j < answerSummary.length; j++) {
+    var dim = answerSummary[j] && answerSummary[j].dimension
+    if (dim) counts[dim] = (counts[dim] || 0) + 1
+  }
+  keys = Object.keys(counts)
+  best = ''
+  bestCount = 0
+  for (var k = 0; k < keys.length; k++) {
+    if (counts[keys[k]] > bestCount) {
+      best = keys[k]
+      bestCount = counts[keys[k]]
+    }
+  }
+  return best
+}
+
+function buildGeneratedProfileFromTitle(title, emoji, dominantTrait) {
+  var base = getProfile(title)
+  if (!base) return null
+  var generated = {}
+  for (var key in base) {
+    if (Object.prototype.hasOwnProperty.call(base, key)) generated[key] = base[key]
+  }
+  generated.title = title
+  generated.emoji = emoji || '🌟'
+  generated.description = (base.cards && base.cards[0] && base.cards[1]) ? (base.cards[0].text + base.cards[1].text) : base.lead
+  generated.dominantTrait = dominantTrait || title
+  generated.matchPercent = 92
+  return generated
+}
+
+function buildDimensionGeneratedProfile(result, domain) {
+  var dim = dominantDimensionFromResult(result)
+  var personaTitles = {
+    '显眼包': ['班级显眼包', '🦚', '气氛发动机'],
+    '摸鱼王': ['专业摸鱼选手', '🐟', '节能摸鱼'],
+    '学霸型': ['低调实力派', '📚', '稳定输出'],
+    '透明人': ['隐藏观察者', '👻', '安静观察']
+  }
+  var foodTitles = {
+    '奶茶续命': ['奶茶续命型选手', '🧋', '甜度补给'],
+    '干饭第一': ['食堂干饭王', '🍚', '正餐能量'],
+    '零食囤积': ['课桌零食库管理员', '🍫', '零食补给'],
+    '随缘吃啥': ['佛系饮食派', '🍃', '随缘不纠结']
+  }
+  var config = domain === 'persona' ? personaTitles[dim] : foodTitles[dim]
+  if (!config) return null
+  return buildGeneratedProfileFromTitle(config[0], config[1], config[2])
+}
+
 function buildGenericProfile(result) {
   var domain = inferDomain(result)
   var ratio = scoreRatio(result)
+  if (domain === 'persona' || domain === 'food') {
+    var dimensionProfile = buildDimensionGeneratedProfile(result, domain)
+    if (dimensionProfile) return dimensionProfile
+  }
   if (domain === 'consume') {
     if (ratio <= 35) {
       return {
@@ -454,7 +524,7 @@ function normalizeResult(result) {
     if (generatedProfile) {
       normalized.resultTitle = generatedProfile.title
       normalized.resultEmoji = generatedProfile.emoji || normalized.resultEmoji
-      normalized.resultDesc = generatedProfile.lead
+      normalized.resultDesc = generatedProfile.description || generatedProfile.lead
       normalized.dominantTrait = generatedProfile.dominantTrait || ''
       normalized.matchPercent = generatedProfile.matchPercent || scoreRatio(normalized)
     }

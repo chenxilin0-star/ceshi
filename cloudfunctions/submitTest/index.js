@@ -1,6 +1,7 @@
 const cloud = require('wx-server-sdk')
 cloud.init({ env: cloud.DYNAMIC_CURRENT_ENV })
 const db = cloud.database()
+const resultLogic = require('./resultLogic')
 
 function getFallbackTitle(test) {
   var category = (test && test.category) || ''
@@ -65,82 +66,11 @@ exports.main = async (event, context) => {
 
     // 4. 服务端计算分数和结果
     var scoringType = test.scoringType || 'score'
-    var resultTitle = ''
-    var resultDesc = ''
-    var resultEmoji = ''
-    var score = 0
-
-    if (scoringType === 'dimension') {
-      // 维度计分模式：每个选项属于一个维度，统计每个维度被选中的次数
-      var dimensionCounts = {}
-      var dimensionEmojis = test.dimensionEmojis || {}
-
-      for (var i = 0; i < questions.length; i++) {
-        var optIdx = answers[i]
-        if (optIdx < 0 || !questions[i].options || !questions[i].options[optIdx]) continue
-        var opt = questions[i].options[optIdx]
-        var dim = opt.dimension || ''
-        if (dim) {
-          dimensionCounts[dim] = (dimensionCounts[dim] || 0) + 1
-        }
-      }
-
-      // 找出计数最高的维度
-      var maxDim = ''
-      var maxCount = 0
-      var dims = Object.keys(dimensionCounts)
-      for (var d = 0; d < dims.length; d++) {
-        if (dimensionCounts[dims[d]] > maxCount) {
-          maxCount = dimensionCounts[dims[d]]
-          maxDim = dims[d]
-        }
-      }
-
-      score = maxCount
-      resultEmoji = dimensionEmojis[maxDim] || ''
-
-      // 从 resultRules 中匹配维度对应的结果
-      var resultRules = test.resultRules || []
-      for (var r = 0; r < resultRules.length; r++) {
-        var rule = resultRules[r]
-        if (rule.dimension === maxDim) {
-          resultTitle = rule.title || ''
-          resultDesc = rule.description || ''
-          break
-        }
-      }
-
-    } else {
-      // 分数累加模式：每个选项有 score 值，累加后按区间匹配结果
-      for (var i = 0; i < questions.length; i++) {
-        var optIdx = answers[i]
-        if (optIdx < 0 || !questions[i].options || !questions[i].options[optIdx]) continue
-        score += (questions[i].options[optIdx].score || 0)
-      }
-
-      // 从 resultRules 中按分数区间匹配
-      var resultRules = test.resultRules || []
-      for (var r = 0; r < resultRules.length; r++) {
-        var rule = resultRules[r]
-        if (score >= (rule.minScore || 0) && score <= (rule.maxScore || 9999)) {
-          resultTitle = rule.title || ''
-          resultDesc = rule.description || ''
-          resultEmoji = rule.emoji || ''
-          break
-        }
-      }
-    }
-
-    // 如果没有匹配到任何规则，给一个默认结果；如果规则缺说明，也补齐友好说明
-    if (!resultTitle) {
-      resultTitle = getFallbackTitle(test)
-    }
-    if (!resultDesc) {
-      resultDesc = buildResultDescription(test, resultTitle, score, questions.length)
-    }
-    if (!resultEmoji) {
-      resultEmoji = '🌟'
-    }
+    var calculated = resultLogic.calculateTestResult(test, questions, answers)
+    var score = calculated.score
+    var resultTitle = calculated.resultTitle
+    var resultDesc = calculated.resultDesc
+    var resultEmoji = calculated.resultEmoji
 
     // 5. 获取用户信息
     var userRes = await db.collection('users').where({ _openid: OPENID }).get()
@@ -163,6 +93,8 @@ exports.main = async (event, context) => {
         resultDesc: resultDesc,
         resultEmoji: resultEmoji,
         scoringType: scoringType,
+        dominantDimension: calculated.dominantDimension || '',
+        dimensionCounts: calculated.dimensionCounts || {},
         questionCount: questions.length,
         createTime: now
       }
@@ -175,6 +107,8 @@ exports.main = async (event, context) => {
       resultTitle: resultTitle,
       resultDesc: resultDesc,
       resultEmoji: resultEmoji,
+      dominantDimension: calculated.dominantDimension || '',
+      dimensionCounts: calculated.dimensionCounts || {},
       questionCount: questions.length
     }
   } catch (err) {

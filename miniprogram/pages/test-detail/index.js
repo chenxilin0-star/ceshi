@@ -137,6 +137,8 @@ Page({
           resultTitle: res.resultTitle,
           resultDesc: res.resultDesc,
           resultEmoji: res.resultEmoji || '',
+          dominantDimension: res.dominantDimension || '',
+          dimensionCounts: res.dimensionCounts || {},
           questionCount: res.questionCount || that.data.questions.length,
           answerSummary: that.buildAnswerSummary(),
           createTime: new Date().toISOString()
