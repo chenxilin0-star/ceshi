@@ -194,6 +194,43 @@ run('MBTI恋爱人格不能误判成校园班级人设', function () {
   assert.strictEqual(result.dominantDimension, '稳定陪伴')
 })
 
+run('截图里的内耗情绪社恐压力测试不能共用同一套分数结果', function () {
+  var tests = [
+    { title: '精神内耗指数测试', category: '摆烂回血靠注', expectedLow: '内耗过载型', expectedHigh: '松弛稳定型' },
+    { title: '情绪管理风格测试', category: '摆烂回血靠注', expectedLow: '情绪风暴型', expectedHigh: '情绪导航员' },
+    { title: '社交恐惧程度测试', category: '朋友搭子角色', expectedLow: '社交省电型', expectedHigh: '社交自来熟' },
+    { title: '压力指数测试', category: '心理', expectedLow: '压力爆表型', expectedHigh: '轻压前行型' }
+  ]
+  var titles = {}
+  for (var i = 0; i < tests.length; i++) {
+    var item = tests[i]
+    var low = resultLogic.calculateTestResult({ title: item.title, category: item.category, scoringType: 'score', resultRules: [] }, scoreQuestions, [0, 0, 0, 0, 0])
+    var high = resultLogic.calculateTestResult({ title: item.title, category: item.category, scoringType: 'score', resultRules: [] }, scoreQuestions, [3, 3, 3, 3, 3])
+    assert.strictEqual(low.resultTitle, item.expectedLow)
+    assert.strictEqual(high.resultTitle, item.expectedHigh)
+    assert.ok(low.resultDesc.indexOf(item.title) >= 0 || low.resultDesc.indexOf(item.expectedLow) >= 0)
+    titles[low.resultTitle] = true
+    titles[high.resultTitle] = true
+  }
+  assert.strictEqual(Object.keys(titles).length, 8)
+})
+
+run('恋爱脑和MBTI恋爱测试使用不同结果池', function () {
+  var lowAnswers = [0, 0, 0, 0, 0]
+  var highAnswers = [3, 3, 3, 3, 3]
+  var loveBrain = resultLogic.calculateTestResult({ title: '恋爱脑程度测试', category: '恋爱脑', scoringType: 'score', resultRules: [] }, scoreQuestions, lowAnswers)
+  var mbtiLove = resultLogic.calculateTestResult({ title: '你的MBTI恋爱人格测试', category: '恋爱人格', scoringType: 'score', resultRules: [] }, scoreQuestions, lowAnswers)
+  var loveBrainHigh = resultLogic.calculateTestResult({ title: '恋爱脑程度测试', category: '恋爱脑', scoringType: 'score', resultRules: [] }, scoreQuestions, highAnswers)
+  var mbtiLoveHigh = resultLogic.calculateTestResult({ title: '你的MBTI恋爱人格测试', category: '恋爱人格', scoringType: 'score', resultRules: [] }, scoreQuestions, highAnswers)
+
+  assert.strictEqual(loveBrain.resultTitle, '上头雷达型')
+  assert.strictEqual(mbtiLove.resultTitle, '慢热守护者')
+  assert.strictEqual(loveBrainHigh.resultTitle, '边界稳定型')
+  assert.strictEqual(mbtiLoveHigh.resultTitle, '浪漫探索者')
+  assert.notStrictEqual(loveBrain.resultTitle, mbtiLove.resultTitle)
+  assert.notStrictEqual(loveBrainHigh.resultTitle, mbtiLoveHigh.resultTitle)
+})
+
 run('未知首页测试按主导维度生成对应结果，不退回已生成', function () {
   var unknownTest = {
     title: '周末出行人格测试',

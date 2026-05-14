@@ -263,10 +263,61 @@ run('MBTI恋爱人格结果页不能套用校园班级人设文案', function ()
   var campusTitles = ['班级显眼包', '专业摸鱼选手', '低调实力派', '隐藏观察者']
 
   assert.strictEqual(campusTitles.indexOf(result.resultTitle), -1)
-  assert.ok(result.resultTitle.indexOf('恋爱') >= 0 || result.resultTitle.indexOf('陪伴') >= 0)
+  assert.ok(result.resultTitle.indexOf('恋爱') >= 0 || result.resultTitle.indexOf('陪伴') >= 0 || result.resultTitle.indexOf('守护') >= 0)
   assert.ok(result.resultTheme.name.indexOf('恋爱') >= 0 || result.resultTheme.name.indexOf('关系') >= 0)
   assert.ok(result.summaryText.indexOf('班级') === -1)
   assert.ok(result.summaryText.indexOf('恋爱') >= 0 || result.summaryText.indexOf('亲密关系') >= 0)
+})
+
+run('截图里的内耗情绪社恐压力结果页不能共用同一套报告', function () {
+  var items = [
+    { testTitle: '精神内耗指数测试', category: '摆烂回血靠注', resultTitle: '结果已生成', expected: '内耗过载型', theme: '内耗' },
+    { testTitle: '情绪管理风格测试', category: '摆烂回血靠注', resultTitle: '结果已生成', expected: '情绪风暴型', theme: '情绪' },
+    { testTitle: '社交恐惧程度测试', category: '朋友搭子角色', resultTitle: '结果已生成', expected: '社交省电型', theme: '社交' },
+    { testTitle: '压力指数测试', category: '心理', resultTitle: '结果已生成', expected: '压力爆表型', theme: '压力' }
+  ]
+  var titles = {}
+  for (var i = 0; i < items.length; i++) {
+    var item = items[i]
+    var result = presenter.normalizeResult({
+      testTitle: item.testTitle,
+      category: item.category,
+      resultTitle: item.resultTitle,
+      resultDesc: '感谢你的参与，你已完成本次测试。',
+      score: 5,
+      questionCount: 5
+    })
+    assert.strictEqual(result.resultTitle, item.expected)
+    assert.ok(result.summaryText.indexOf(item.theme) >= 0 || result.resultTheme.name.indexOf(item.theme) >= 0)
+    titles[result.resultTitle] = true
+  }
+  assert.strictEqual(Object.keys(titles).length, 4)
+})
+
+run('恋爱脑和MBTI恋爱结果页不能基本一样', function () {
+  var loveBrain = presenter.normalizeResult({
+    testTitle: '恋爱脑程度测试',
+    category: '恋爱脑',
+    resultTitle: '结果已生成',
+    resultDesc: '感谢你的参与，你已完成本次测试。',
+    score: 5,
+    questionCount: 5
+  })
+  var mbtiLove = presenter.normalizeResult({
+    testTitle: '你的MBTI恋爱人格测试',
+    category: '恋爱人格',
+    resultTitle: '结果已生成',
+    resultDesc: '感谢你的参与，你已完成本次测试。',
+    score: 5,
+    questionCount: 5
+  })
+
+  assert.strictEqual(loveBrain.resultTitle, '上头雷达型')
+  assert.strictEqual(mbtiLove.resultTitle, '慢热守护者')
+  assert.notStrictEqual(loveBrain.resultTitle, mbtiLove.resultTitle)
+  assert.notStrictEqual(loveBrain.shareLine, mbtiLove.shareLine)
+  assert.ok(loveBrain.summaryText.indexOf('恋爱脑') >= 0 || loveBrain.summaryText.indexOf('上头') >= 0)
+  assert.ok(mbtiLove.summaryText.indexOf('MBTI') >= 0 || mbtiLove.summaryText.indexOf('恋爱人格') >= 0)
 })
 
 run('未知首页测试结果页按主导维度生成专属文案', function () {

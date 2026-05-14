@@ -8,6 +8,24 @@ function includesAny(text, words) {
 
 function detectTheme(result) {
   var text = [result.category || '', result.testTitle || '', result.resultTitle || ''].join('')
+  if (includesAny(text, ['精神内耗', '内耗指数', '内耗过载'])) {
+    return { key: 'mentalDrain', name: '精神内耗报告', icon: '🌀', gradientClass: 'theme-recharge' }
+  }
+  if (includesAny(text, ['情绪管理', '情绪风格', '情绪风暴'])) {
+    return { key: 'emotionManage', name: '情绪管理报告', icon: '🌪️', gradientClass: 'theme-daily' }
+  }
+  if (includesAny(text, ['压力指数', '压力水平', '压力爆表', '高压'])) {
+    return { key: 'stress', name: '压力指数报告', icon: '🚨', gradientClass: 'theme-recharge' }
+  }
+  if (includesAny(text, ['社交恐惧', '社恐程度', '社交省电', '社恐'])) {
+    return { key: 'socialAnxiety', name: '社交舒适区报告', icon: '🫥', gradientClass: 'theme-social' }
+  }
+  if (includesAny(text, ['恋爱脑', '上头雷达', '反复脑补'])) {
+    return { key: 'loveBrain', name: '恋爱脑指数报告', icon: '💘', gradientClass: 'theme-persona' }
+  }
+  if (includesAny(text, ['MBTI恋爱', 'MBTI 恋爱', '慢热守护者', '浪漫探索者'])) {
+    return { key: 'mbtiLove', name: 'MBTI恋爱人格报告', icon: '💗', gradientClass: 'theme-persona' }
+  }
   if (includesAny(text, ['恋爱', '爱情', '心动', '伴侣', '对象', '脱单', '喜欢的人', '暧昧', '亲密关系'])) {
     return { key: 'love', name: '恋爱人格报告', icon: '💗', gradientClass: 'theme-persona' }
   }
@@ -226,7 +244,7 @@ function isMismatchedResultTitle(result) {
   var personaTitles = ['班级显眼包', '专业摸鱼选手', '低调实力派', '隐藏观察者']
   var foodTitles = ['奶茶续命型选手', '食堂干饭王', '课桌零食库管理员', '佛系饮食派']
   var socialTitles = ['气氛组组长', '树洞倾听担当', '说走就走行动派', '朋友圈军师']
-  if (domain === 'love' && (personaTitles.indexOf(title) >= 0 || foodTitles.indexOf(title) >= 0 || socialTitles.indexOf(title) >= 0)) return true
+  if ((domain === 'love' || domain === 'loveBrain' || domain === 'mbtiLove') && (personaTitles.indexOf(title) >= 0 || foodTitles.indexOf(title) >= 0 || socialTitles.indexOf(title) >= 0)) return true
   if (domain === 'food' && personaTitles.indexOf(title) >= 0) return true
   if (domain === 'social' && personaTitles.indexOf(title) >= 0) return true
   if (domain === 'persona' && foodTitles.indexOf(title) >= 0) return true
@@ -240,6 +258,12 @@ function isGenericDescription(desc) {
 
 function inferDomain(result) {
   var text = [result.category || '', result.testTitle || '', result.resultTitle || ''].join('')
+  if (includesAny(text, ['精神内耗', '内耗指数', '内耗过载'])) return 'mentalDrain'
+  if (includesAny(text, ['情绪管理', '情绪风格', '情绪风暴'])) return 'emotionManage'
+  if (includesAny(text, ['压力指数', '压力水平', '压力爆表', '高压'])) return 'stress'
+  if (includesAny(text, ['社交恐惧', '社恐程度', '社交省电', '社恐'])) return 'socialAnxiety'
+  if (includesAny(text, ['恋爱脑', '上头雷达', '反复脑补'])) return 'loveBrain'
+  if (includesAny(text, ['MBTI恋爱', 'MBTI 恋爱', '慢热守护者', '浪漫探索者'])) return 'mbtiLove'
   if (includesAny(text, ['恋爱', '爱情', '心动', '伴侣', '对象', '脱单', '喜欢的人', '暧昧', '亲密关系'])) return 'love'
   if (includesAny(text, ['消费', '购物', '预算', '花钱', '下单', '价格', '性价比'])) return 'consume'
   if (includesAny(text, ['干饭', '奶茶', '食堂', '饮食', '零食'])) return 'food'
@@ -261,6 +285,12 @@ function scoreRatio(result) {
 function domainLabel(domain) {
   var labels = {
     consume: '消费决策',
+    mentalDrain: '精神内耗',
+    emotionManage: '情绪管理',
+    stress: '压力水平',
+    socialAnxiety: '社交舒适区',
+    loveBrain: '恋爱脑指数',
+    mbtiLove: 'MBTI恋爱',
     love: '恋爱倾向',
     persona: '人格倾向',
     food: '干饭补给',
@@ -328,6 +358,12 @@ function buildDynamicDimensionProfile(result, domain, dim) {
   if (!dim) return null
   var suffixMap = {
     love: '型恋爱人格',
+    loveBrain: '型恋爱脑指数',
+    mbtiLove: '型MBTI恋爱人格',
+    mentalDrain: '型内耗状态',
+    emotionManage: '型情绪风格',
+    stress: '型压力状态',
+    socialAnxiety: '型社交舒适区',
     persona: '型校园人设',
     food: '型干饭人格',
     social: '型朋友角色',
@@ -338,6 +374,12 @@ function buildDynamicDimensionProfile(result, domain, dim) {
   }
   var sceneMap = {
     love: '亲密关系里的表达方式',
+    loveBrain: '恋爱上头程度和边界感',
+    mbtiLove: '恋爱人格里的表达方式',
+    mentalDrain: '精神内耗和自我消耗方式',
+    emotionManage: '情绪识别和调节方式',
+    stress: '当前压力水平和承压方式',
+    socialAnxiety: '社交舒适区和破冰方式',
     persona: '校园/班级场景里的表现方式',
     food: '干饭、奶茶和日常补给偏好',
     social: '朋友相处和群聊互动方式',
@@ -348,7 +390,7 @@ function buildDynamicDimensionProfile(result, domain, dim) {
   }
   var title = dim
   if (title.indexOf('型') < 0 && title.indexOf('派') < 0 && title.indexOf('者') < 0 && title.indexOf('控') < 0 && title.indexOf('担当') < 0) title += (suffixMap[domain] || suffixMap.general)
-  var emoji = domain === 'love' ? '💗' : (domain === 'consume' ? '🛍️' : (domain === 'recharge' ? '🔋' : '🌟'))
+  var emoji = (domain === 'love' || domain === 'loveBrain' || domain === 'mbtiLove') ? '💗' : (domain === 'consume' ? '🛍️' : (domain === 'recharge' ? '🔋' : (domain === 'stress' ? '🚨' : (domain === 'mentalDrain' ? '🌀' : '🌟'))))
   var scene = sceneMap[domain] || sceneMap.general
   return {
     title: title,
@@ -395,6 +437,31 @@ function buildDimensionGeneratedProfile(result, domain) {
 }
 
 function buildScoreGeneratedProfile(result, domain, ratio) {
+  var topicProfiles = {
+    mentalDrain: [['内耗过载型', '🌀', '精神内耗'], ['反复拉扯型', '🔁', '精神内耗'], ['自我校准型', '🧭', '精神内耗'], ['松弛稳定型', '🍃', '精神内耗']],
+    emotionManage: [['情绪风暴型', '🌪️', '情绪管理'], ['忍住不说型', '🤐', '情绪管理'], ['稳定调节型', '🌤️', '情绪管理'], ['情绪导航员', '🧭', '情绪管理']],
+    socialAnxiety: [['社交省电型', '🫥', '社交舒适区'], ['熟人舒适型', '🛋️', '社交舒适区'], ['选择性社交型', '🎯', '社交舒适区'], ['社交自来熟', '🤝', '社交舒适区']],
+    stress: [['压力爆表型', '🚨', '压力水平'], ['高压绷紧型', '🧯', '压力水平'], ['可控压力型', '📌', '压力水平'], ['轻压前行型', '🌿', '压力水平']],
+    loveBrain: [['上头雷达型', '💘', '恋爱脑'], ['反复脑补型', '💭', '恋爱脑'], ['清醒心动型', '💗', '恋爱脑'], ['边界稳定型', '🧊', '恋爱脑']],
+    mbtiLove: [['慢热守护者', '🛡️', 'MBTI恋爱'], ['稳定陪伴者', '🌙', 'MBTI恋爱'], ['直球行动者', '🏹', 'MBTI恋爱'], ['浪漫探索者', '✨', 'MBTI恋爱']]
+  }
+  if (topicProfiles[domain]) {
+    var topicIndex = ratio <= 35 ? 0 : (ratio <= 65 ? 1 : (ratio <= 85 ? 2 : 3))
+    var topicConfig = topicProfiles[domain][topicIndex]
+    return {
+      title: topicConfig[0],
+      emoji: topicConfig[1],
+      tags: [topicConfig[0], topicConfig[2], domainLabel(domain), '专属结果'],
+      lead: '这是「' + (result.testTitle || '本次测试') + '」的专属结果，不再和其他测试共用同一套答案。',
+      cards: [card(topicConfig[1], '你的结果类型', '你在「' + (result.testTitle || '本次测试') + '」里更接近「' + topicConfig[0] + '」。'), card('🧩', '为什么是这个结果', '系统根据这个测试的主题「' + topicConfig[2] + '」和你的分数区间生成结果，而不是套用其他题目的通用文案。'), card('✨', '建议', '把结果当成一个轻量提醒：看见当前状态，再选择一个能马上执行的小动作。')],
+      bars: [bar(topicConfig[2], 88, 'pink'), bar('结果匹配', 82, 'purple'), bar('调整空间', 64, 'blue')],
+      actions: [action('🧭', '先确认这份结果里最像你的一句话。'), action('📌', '选一个今天能做的小调整，不需要一下子改变很多。'), action('💬', '分享给朋友看看，同一题目不同选择会得到不同结果。')],
+      share: '我在「' + (result.testTitle || '本次测试') + '」里的结果是「' + topicConfig[0] + '」。',
+      dominantTrait: topicConfig[2],
+      matchPercent: 88,
+      description: '你在「' + (result.testTitle || '本次测试') + '」中的分数区间指向「' + topicConfig[0] + '」，主题线索是「' + topicConfig[2] + '」，本内容仅作娱乐参考。'
+    }
+  }
   var config = null
   if (domain === 'persona') {
     if (ratio <= 30) config = ['隐藏观察者', '👻', '安静观察']
@@ -433,7 +500,7 @@ function buildGenericProfile(result) {
     var dimensionProfile = buildDimensionGeneratedProfile(result, domain)
     if (dimensionProfile) return dimensionProfile
   }
-  if (domain === 'persona' || domain === 'food' || domain === 'daily' || domain === 'recharge' || domain === 'love' || domain === 'general') {
+  if (domain === 'persona' || domain === 'food' || domain === 'daily' || domain === 'recharge' || domain === 'love' || domain === 'loveBrain' || domain === 'mbtiLove' || domain === 'mentalDrain' || domain === 'emotionManage' || domain === 'stress' || domain === 'socialAnxiety' || domain === 'general') {
     var scoreProfile = buildScoreGeneratedProfile(result, domain, ratio)
     if (scoreProfile) return scoreProfile
   }

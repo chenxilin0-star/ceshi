@@ -90,6 +90,56 @@ var RECHARGE_SCORE_PROFILES = [
   profile('满电出发', '你今天像刚充满电，适合处理一直拖着的重点任务。你的高分选择集中在主动解决和快速推进，所以结果是「满电出发」。高光是执行窗口打开，提醒是别把满电一次用空。', '⚡', '满电输出')
 ]
 
+var TOPIC_SCORE_PROFILES = {
+  mentalDrain: [
+    profile('内耗过载型', '在「精神内耗指数测试」里，你的选择更像脑内开了太多后台：明明还没行动，已经先被担心、比较和反复推演消耗掉一大半。结果落在「内耗过载型」。建议先把脑子里的事写下来，只保留一个今天必须处理的小动作。', '🌀', '精神内耗'),
+    profile('反复拉扯型', '你的内耗不算爆表，但很容易在“想做”和“算了”之间来回拉扯。结果落在「反复拉扯型」。适合先做低风险决定，别让每件小事都变成大型辩论赛。', '🔁', '精神内耗'),
+    profile('自我校准型', '你会有想太多的时候，但也能把自己慢慢拉回现实。结果落在「自我校准型」。优势是能复盘，提醒是别把复盘变成自责。', '🧭', '精神内耗'),
+    profile('松弛稳定型', '你的选择显示你比较能把注意力放回当下，不太容易被脑内小剧场拖走。结果落在「松弛稳定型」。继续保持这种低内耗节奏。', '🍃', '精神内耗')
+  ],
+  emotionManage: [
+    profile('情绪风暴型', '在「情绪管理风格测试」里，你的选择更像情绪来得快、冲击也强：不一定是不成熟，而是感受很敏锐。结果落在「情绪风暴型」。先暂停十秒再回应，会比立刻爆发更保护你。', '🌪️', '情绪管理'),
+    profile('忍住不说型', '你更习惯把情绪压住，表面没事，心里已经开会。结果落在「忍住不说型」。优势是克制，提醒是不要长期把感受塞回去。', '🤐', '情绪管理'),
+    profile('稳定调节型', '你能感知情绪，也会尝试用比较稳的方式处理它。结果落在「稳定调节型」。这是很适合校园生活的情绪节奏。', '🌤️', '情绪管理'),
+    profile('情绪导航员', '你不只是能管住情绪，还能分辨情绪背后的需求。结果落在「情绪导航员」。高光是稳定且有边界，提醒是别变成所有人的情绪客服。', '🧭', '情绪管理')
+  ],
+  socialAnxiety: [
+    profile('社交省电型', '在「社交恐惧程度测试」里，你的选择显示你不是讨厌所有人，而是社交电量很珍贵。结果落在「社交省电型」。适合小范围、低压力、可退出的社交。', '🫥', '社交舒适区'),
+    profile('熟人舒适型', '你在陌生场合会慢热，但到了熟人局就能自然很多。结果落在「熟人舒适型」。不必强迫自己一上来就社牛。', '🛋️', '社交舒适区'),
+    profile('选择性社交型', '你不是社恐也不是社牛，而是会挑场合、挑对象、挑能量。结果落在「选择性社交型」。这是很健康的社交边界。', '🎯', '社交舒适区'),
+    profile('社交自来熟', '你的选择更偏向主动破冰和自然融入，陌生场合也不太会卡壳。结果落在「社交自来熟」。提醒是也给慢热的人一点进入节奏的时间。', '🤝', '社交舒适区')
+  ],
+  stress: [
+    profile('压力爆表型', '在「压力指数测试」里，你的选择显示当前压力已经很明显：不是矫情，而是身心都在提醒你降负荷。结果落在「压力爆表型」。先做减法，暂停一个不必要任务。', '🚨', '压力水平'),
+    profile('高压绷紧型', '你的压力还没彻底爆表，但已经处在绷紧状态。结果落在「高压绷紧型」。适合把任务拆小，并给自己设置休息闹钟。', '🧯', '压力水平'),
+    profile('可控压力型', '你有压力，但还能把它转化成一定行动力。结果落在「可控压力型」。保持节奏，不要把所有事都堆到最后一刻。', '📌', '压力水平'),
+    profile('轻压前行型', '你的压力水平相对可控，更像轻微提醒而不是警报。结果落在「轻压前行型」。继续保持边做边调整的节奏。', '🌿', '压力水平')
+  ],
+  loveBrain: [
+    profile('上头雷达型', '在「恋爱脑程度测试」里，你的选择说明你很容易被心动信号牵着走：对方一句话、一个表情，都可能在你脑子里循环播放。结果落在「上头雷达型」。喜欢可以热烈，但别把全部情绪开关交给对方。', '💘', '恋爱脑'),
+    profile('反复脑补型', '你不一定会立刻冲动行动，但很容易在心里反复推演关系走向。结果落在「反复脑补型」。提醒是多看真实互动，少让脑补替对方发言。', '💭', '恋爱脑'),
+    profile('清醒心动型', '你会心动，也会给自己留一点判断空间。结果落在「清醒心动型」。这是比较舒服的恋爱节奏：有感觉，但不失去自己。', '💗', '恋爱脑'),
+    profile('边界稳定型', '你的选择显示你在感情里比较稳，不容易因为一时上头打乱全部生活。结果落在「边界稳定型」。优势是清醒，提醒是别把表达喜欢也压得太冷。', '🧊', '恋爱脑')
+  ],
+  mbtiLove: [
+    profile('慢热守护者', '在「MBTI恋爱人格测试」里，你更像慢热但可靠的守护者：不会一开始就高调表达，但会用稳定回应和细节照顾建立安全感。结果落在「慢热守护者」。', '🛡️', 'MBTI恋爱'),
+    profile('稳定陪伴者', '你的恋爱人格偏向稳定陪伴：重视承诺、日常回应和长期相处的舒服感。结果落在「稳定陪伴者」。优势是让人安心，提醒是别把需求都藏起来。', '🌙', 'MBTI恋爱'),
+    profile('直球行动者', '你的恋爱人格更偏直接行动：喜欢就会靠近，问题出现也倾向当面解决。结果落在「直球行动者」。高光是真诚，提醒是给对方一点消化时间。', '🏹', 'MBTI恋爱'),
+    profile('浪漫探索者', '你的恋爱人格更像浪漫探索者：重视新鲜感、仪式感和一起体验世界。结果落在「浪漫探索者」。提醒是热烈之外也要照顾稳定感。', '✨', 'MBTI恋爱')
+  ]
+}
+
+function getTopicKey(test) {
+  var text = [(test && test.category) || '', (test && test.title) || '', (test && test.description) || ''].join('')
+  if (includesAny(text, ['精神内耗', '内耗指数'])) return 'mentalDrain'
+  if (includesAny(text, ['情绪管理', '情绪风格'])) return 'emotionManage'
+  if (includesAny(text, ['社交恐惧', '社恐程度', '社恐'])) return 'socialAnxiety'
+  if (includesAny(text, ['压力指数', '压力水平', '减压'])) return 'stress'
+  if (includesAny(text, ['恋爱脑'])) return 'loveBrain'
+  if (includesAny(text, ['MBTI恋爱', 'MBTI 恋爱', '恋爱人格'])) return 'mbtiLove'
+  return ''
+}
+
 function getDomain(test) {
   var text = [(test && test.category) || '', (test && test.title) || ''].join('')
   if (includesAny(text, ['恋爱', '爱情', '心动', '伴侣', '对象', '脱单', '喜欢的人', '暧昧', '亲密关系'])) return 'love'
@@ -169,6 +219,8 @@ function getScoreFallbackProfile(test, score, questionCount) {
   var maxScore = Math.max((questionCount || 5) * 4, 1)
   var ratio = Math.round((score / maxScore) * 100)
   var text = [(test && test.category) || '', (test && test.title) || ''].join('')
+  var topicKey = getTopicKey(test)
+  if (topicKey && TOPIC_SCORE_PROFILES[topicKey]) return scoreProfileByRatio(TOPIC_SCORE_PROFILES[topicKey], ratio)
   if (domain === 'state') {
     if (includesAny(text, ['摆烂', '回血', '电量'])) return scoreProfileByRatio(RECHARGE_SCORE_PROFILES, ratio)
     return scoreProfileByRatio(DAILY_SCORE_PROFILES, ratio)
@@ -218,7 +270,7 @@ function isMismatchedTitleForDomain(test, title) {
   var personaTitles = ['班级显眼包', '专业摸鱼选手', '低调实力派', '隐藏观察者']
   var foodTitles = ['奶茶续命型选手', '食堂干饭王', '课桌零食库管理员', '佛系饮食派']
   var socialTitles = ['气氛组组长', '树洞倾听担当', '说走就走行动派', '朋友圈军师']
-  if (domain === 'love' && (personaTitles.indexOf(title) >= 0 || foodTitles.indexOf(title) >= 0 || socialTitles.indexOf(title) >= 0)) return true
+  if ((domain === 'love' || domain === 'loveBrain' || domain === 'mbtiLove') && (personaTitles.indexOf(title) >= 0 || foodTitles.indexOf(title) >= 0 || socialTitles.indexOf(title) >= 0)) return true
   if (domain === 'food' && personaTitles.indexOf(title) >= 0) return true
   if (domain === 'social' && personaTitles.indexOf(title) >= 0) return true
   if (domain === 'persona' && foodTitles.indexOf(title) >= 0) return true
