@@ -3,7 +3,7 @@
     "pages/index/index",
     "pages/login/index",
     "pages/lottery/index",
-"pages/points/index",
+    "pages/points/index",
     "pages/test-detail/index",
     "pages/test-result/index",
     "pages/product-list/index",

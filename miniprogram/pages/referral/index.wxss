@@ -1,7 +1,5 @@
 /* ========================================
    Referral / Distribution - Dreamy Candy Theme
-   Stats cards, share button with glow,
-   referral lists with soft pink shadows
    ======================================== */
 
 /* ========== Page Container ========== */
@@ -11,66 +9,188 @@
   padding-bottom: 120rpx;
 }
 
+/* ========== Hero Header ========== */
+.referral-hero {
+  position: relative;
+  overflow: hidden;
+  background: linear-gradient(135deg, #B388FF 0%, #FF7EB3 60%, #FFB74D 100%);
+  border-radius: 0 0 48rpx 48rpx;
+  padding: 48rpx 32rpx 72rpx;
+  text-align: center;
+  color: #FFFFFF;
+  box-shadow: 0 18rpx 50rpx rgba(127, 86, 217, 0.22);
+}
+
+.referral-hero .hero-bg {
+  position: absolute;
+  border-radius: 999rpx;
+  opacity: 0.18;
+  pointer-events: none;
+}
+
+.referral-hero .hero-bg-one {
+  width: 260rpx;
+  height: 260rpx;
+  right: -60rpx;
+  top: -20rpx;
+  background: #FFFFFF;
+}
+
+.referral-hero .hero-bg-two {
+  width: 180rpx;
+  height: 180rpx;
+  left: -40rpx;
+  bottom: -10rpx;
+  background: #FFE066;
+}
+
+.referral-hero .hero-inner {
+  position: relative;
+  z-index: 1;
+}
+
+.hero-label {
+  display: inline-flex;
+  align-items: center;
+  padding: 6rpx 18rpx;
+  border-radius: 999rpx;
+  background: rgba(255, 255, 255, 0.2);
+  border: 1rpx solid rgba(255, 255, 255, 0.35);
+  font-size: 22rpx;
+  font-weight: 600;
+  letter-spacing: 1rpx;
+}
+
+.hero-title {
+  display: block;
+  margin-top: 16rpx;
+  font-size: 40rpx;
+  font-weight: 700;
+  text-shadow: 0 4rpx 16rpx rgba(88, 49, 148, 0.25);
+}
+
 /* ========== Stats Grid ========== */
 .stats-grid {
   display: flex;
   gap: 24rpx;
-  padding: 32rpx;
+  padding: 0 32rpx;
+  margin-top: -40rpx;
+  position: relative;
+  z-index: 2;
 }
 
-/* Default stat card - white with dreamy shadow */
 .stat-card {
   flex: 1;
   background: #FFFFFF;
   border-radius: var(--radius-lg);
-  padding: 40rpx 32rpx;
+  padding: 32rpx 24rpx;
   text-align: center;
-  box-shadow: var(--shadow-card);
+  box-shadow: var(--shadow-float);
   border: 1rpx solid rgba(255, 126, 179, 0.06);
   transition: transform 0.2s ease;
 }
 
-/* Accent stat card - lilac gradient background, white text */
+.stat-card:active {
+  transform: scale(0.97);
+}
+
 .stat-card-accent {
-  background: var(--gradient-lilac);
+  background: linear-gradient(135deg, #FFC3F7, #D4A8FF);
   color: #FFFFFF;
   border: none;
-  box-shadow: 0 8rpx 28rpx rgba(212, 168, 255, 0.25);
+  box-shadow: 0 12rpx 36rpx rgba(212, 168, 255, 0.3);
+}
+
+.stat-icon-wrap {
+  width: 72rpx;
+  height: 72rpx;
+  border-radius: 20rpx;
+  background: linear-gradient(135deg, #FFF2F7, #F3EAFF);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto 16rpx;
+}
+
+.stat-card-accent .stat-icon-wrap {
+  background: rgba(255, 255, 255, 0.25);
+}
+
+.stat-icon {
+  font-size: 36rpx;
 }
 
 .stat-card .value {
-  font-size: 56rpx;
+  font-size: 48rpx;
   font-weight: var(--weight-bold);
   display: block;
   letter-spacing: -1rpx;
+  color: var(--color-text-primary);
+}
+
+.stat-card-accent .value {
+  color: #FFFFFF;
 }
 
 .stat-card .label {
   font-size: 24rpx;
-  margin-top: 12rpx;
-  opacity: 0.7;
+  margin-top: 8rpx;
+  color: var(--color-text-tertiary);
   display: block;
 }
 
+.stat-card-accent .label {
+  color: rgba(255, 255, 255, 0.85);
+}
+
 /* ========== Rules Card ========== */
-/* .rules-card inherits from global .card class (white bg, rounded, shadow) */
 .rules-card {
-  margin: 0 32rpx 32rpx;
+  margin: 32rpx;
+}
+
+.rules-header {
+  display: flex;
+  align-items: center;
+  margin-bottom: 20rpx;
+}
+
+.rules-icon {
+  font-size: 32rpx;
+  margin-right: 12rpx;
 }
 
 .rules-title {
   font-size: 30rpx;
-  font-weight: var(--weight-medium);
+  font-weight: var(--weight-bold);
   color: var(--color-text-primary);
-  display: block;
-  margin-bottom: 12rpx;
+}
+
+.rules-body {
+  display: flex;
+  flex-direction: column;
+  gap: 16rpx;
+}
+
+.rule-row {
+  display: flex;
+  align-items: flex-start;
+  gap: 16rpx;
+}
+
+.rule-dot {
+  width: 10rpx;
+  height: 10rpx;
+  border-radius: 50%;
+  background: var(--color-primary);
+  margin-top: 12rpx;
+  flex-shrink: 0;
 }
 
 .rules-text {
   font-size: 26rpx;
   color: var(--color-text-secondary);
-  display: block;
-  line-height: var(--line-height-loose);
+  line-height: 1.6;
+  flex: 1;
 }
 
 /* ========== Share Button ========== */
@@ -78,106 +198,132 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  margin: 32rpx;
-  padding: 32rpx;
+  margin: 0 32rpx 32rpx;
+  padding: 0;
   background: var(--gradient-primary) !important;
   border-radius: var(--radius-lg);
   color: #FFFFFF !important;
   text-align: center;
-  font-size: 32rpx;
+  font-size: 30rpx;
   font-weight: var(--weight-medium);
-  box-shadow: 0 8rpx 32rpx rgba(255, 126, 179, 0.35);
+  box-shadow: 0 12rpx 36rpx rgba(255, 126, 179, 0.35);
   border: none;
   line-height: 1.5;
   letter-spacing: 2rpx;
   transition: all 0.2s ease;
+  height: 96rpx;
 }
 
-/* Remove default button border in WeChat */
 .share-btn::after {
   border: none;
 }
 
 .share-btn:active {
-  transform: scale(0.98);
-  opacity: 0.9;
+  transform: scale(0.97);
+  opacity: 0.92;
 }
 
-/* ========== Referral List ========== */
-.referral-list,
-.points-list {
-  margin-top: 16rpx;
-}
-
-/* Referral item - soft card with icon */
-.referral-item {
+.share-inner {
   display: flex;
   align-items: center;
-  padding: 24rpx 32rpx;
-  background: #FFFFFF;
-  border-radius: var(--radius-md);
-  margin-bottom: 12rpx;
-  box-shadow: var(--shadow-card);
-  border: 1rpx solid rgba(255, 126, 179, 0.04);
-  transition: transform 0.15s ease;
+  justify-content: center;
+  gap: 12rpx;
 }
 
-.referral-item .icon {
-  font-size: 40rpx;
-  margin-right: 24rpx;
-  flex-shrink: 0;
+.share-icon {
+  font-size: 32rpx;
 }
 
-.referral-item .info {
-  flex: 1;
-  min-width: 0;
+/* ========== Section ========== */
+.section {
+  margin-top: 8rpx;
 }
 
-.referral-item .name {
-  font-size: 28rpx;
+.section .section-header .title {
+  font-size: 32rpx;
+  font-weight: 700;
   color: var(--color-text-primary);
-  display: block;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
 }
 
-.referral-item .time {
-  font-size: 22rpx;
-  color: var(--color-text-tertiary);
-  flex-shrink: 0;
+/* ========== Points List ========== */
+.points-list {
+  margin-top: 8rpx;
 }
 
-/* ========== Points Record Item ========== */
 .record-item {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 24rpx 32rpx;
+  padding: 28rpx 32rpx;
   background: #FFFFFF;
-  border-radius: var(--radius-md);
-  margin-bottom: 12rpx;
+  border-radius: 24rpx;
+  margin-bottom: 16rpx;
   box-shadow: var(--shadow-card);
-  border: 1rpx solid rgba(255, 126, 179, 0.04);
+  border: 1rpx solid rgba(255, 126, 179, 0.06);
+  transition: transform 0.15s ease;
 }
 
-/* Points change in success green */
-.record-item .change {
-  font-size: 32rpx;
-  font-weight: var(--weight-medium);
-  color: var(--color-success);
+.record-item:active {
+  transform: scale(0.98);
+}
+
+.record-left {
+  display: flex;
+  align-items: center;
+  flex: 1;
+  min-width: 0;
+}
+
+.record-icon-wrap {
+  width: 64rpx;
+  height: 64rpx;
+  border-radius: 18rpx;
+  background: linear-gradient(135deg, #FFF2F7, #F3EAFF);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-right: 20rpx;
   flex-shrink: 0;
 }
 
-.record-item .detail {
-  font-size: 26rpx;
-  color: var(--color-text-secondary);
+.record-icon {
+  font-size: 32rpx;
+}
+
+.record-info {
   flex: 1;
-  text-align: center;
+  min-width: 0;
+}
+
+.record-item .detail {
+  font-size: 28rpx;
+  color: var(--color-text-primary);
+  font-weight: 500;
+  display: block;
 }
 
 .record-item .time {
   font-size: 22rpx;
   color: var(--color-text-tertiary);
+  margin-top: 4rpx;
+  display: block;
+}
+
+.record-right {
+  text-align: right;
   flex-shrink: 0;
+  margin-left: 16rpx;
+}
+
+.record-item .change {
+  font-size: 32rpx;
+  font-weight: var(--weight-bold);
+  color: var(--color-success);
+  display: block;
+}
+
+.change-unit {
+  font-size: 20rpx;
+  color: var(--color-success);
+  opacity: 0.8;
 }

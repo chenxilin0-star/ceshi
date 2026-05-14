@@ -11,12 +11,22 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  background: #FFFFFF;
+  background: linear-gradient(135deg, #FFFFFF, #FFF8FB);
   border-radius: 28rpx;
-  padding: 32rpx;
+  padding: 28rpx 32rpx;
   margin: 32rpx;
   box-shadow: 0 4rpx 20rpx rgba(255, 126, 179, 0.08);
-  border: 1rpx solid var(--color-border-light);
+  border: 1rpx solid rgba(255, 126, 179, 0.06);
+}
+
+.points-bar-left {
+  display: flex;
+  align-items: center;
+  gap: 12rpx;
+}
+
+.points-bar-icon {
+  font-size: 32rpx;
 }
 
 .points-bar .label {
@@ -25,9 +35,10 @@
 }
 
 .points-bar .value {
-  font-size: 40rpx;
+  font-size: 44rpx;
   font-weight: 700;
-  color: #FFB74D;
+  color: var(--color-accent);
+  text-shadow: 0 2rpx 8rpx rgba(255, 183, 77, 0.15);
 }
 
 /* Product Grid */
@@ -45,12 +56,12 @@
   border-radius: 28rpx;
   overflow: hidden;
   box-shadow: 0 4rpx 20rpx rgba(255, 126, 179, 0.08);
-  border: 1rpx solid var(--color-border-light);
+  border: 1rpx solid rgba(255, 126, 179, 0.06);
   transition: all 0.2s ease;
 }
 
 .product-card:active {
-  transform: scale(0.98);
+  transform: scale(0.97);
 }
 
 .product-image {
@@ -85,7 +96,7 @@
 .product-points {
   font-size: 28rpx;
   font-weight: 700;
-  color: #FFB74D;
+  color: var(--color-accent);
 }
 
 .product-remain {

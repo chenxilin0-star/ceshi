@@ -1,7 +1,5 @@
 /* ========================================
    My Products - Dreamy Candy Theme
-   Soft macaron pinks, fluffy rounded cards,
-   gentle bubble shadows
    ======================================== */
 
 /* ========== Page Container ========== */
@@ -65,6 +63,10 @@
   box-shadow: var(--shadow-card);
   border: 1rpx solid rgba(255, 126, 179, 0.06);
   transition: transform 0.2s ease;
+}
+
+.product-item:active {
+  transform: scale(0.98);
 }
 
 .product-item .header {

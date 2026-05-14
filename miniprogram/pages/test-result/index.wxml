@@ -1,15 +1,19 @@
 <view class="page-test-result">
   <!-- Loading -->
   <view class="loading-state" wx:if="{{loading}}">
-    <text class="loading-emoji">✨</text>
-    <text class="loading-text">正在生成你的测试报告...</text>
+    <view class="loading-ring">
+      <text class="loading-emoji">✨</text>
+    </view>
+    <text class="loading-text">正在生成你的测试报告…</text>
   </view>
 
   <!-- Result content -->
   <view class="result-content" wx:if="{{!loading && result}}">
     <!-- Header -->
     <view class="result-header">
-      <view class="result-badge">{{result.resultEmoji || '🎉'}}</view>
+      <view class="result-badge-wrap">
+        <text class="result-badge">{{result.resultEmoji || '🎉'}}</text>
+      </view>
       <text class="result-label">测试完成</text>
       <text class="result-title">{{result.resultTitle}}</text>
     </view>
@@ -42,7 +46,9 @@
     </view>
 
     <view class="suggestion-card">
-      <text class="suggestion-icon">💡</text>
+      <view class="suggestion-icon-wrap">
+        <text class="suggestion-icon">💡</text>
+      </view>
       <view class="suggestion-copy">
         <text class="suggestion-title">给今天的小建议</text>
         <text class="suggestion-text">{{result.resultSuggestion}}</text>

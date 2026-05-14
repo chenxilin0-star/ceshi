@@ -1,7 +1,5 @@
 /* ========================================
    Profile - Dreamy Candy Theme
-   Lilac gradient header, peach avatar glow,
-   floating stats card overlap, soft menu list
    ======================================== */
 
 /* ========== Page Container ========== */
@@ -12,7 +10,6 @@
 }
 
 /* ========== Profile Header ========== */
-/* Lilac gradient background with rounded bottom corners */
 .profile-header {
   display: flex;
   align-items: center;
@@ -21,6 +18,31 @@
   border-radius: 0 0 48rpx 48rpx;
   color: #FFFFFF;
   position: relative;
+  overflow: hidden;
+}
+
+.profile-header::before {
+  content: '';
+  position: absolute;
+  top: -40rpx;
+  right: -40rpx;
+  width: 200rpx;
+  height: 200rpx;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.12);
+  pointer-events: none;
+}
+
+.profile-header::after {
+  content: '';
+  position: absolute;
+  bottom: -20rpx;
+  left: 40rpx;
+  width: 120rpx;
+  height: 120rpx;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.08);
+  pointer-events: none;
 }
 
 /* Avatar circle with peach gradient background and frosted border */
@@ -36,6 +58,8 @@
   border: 4rpx solid rgba(255, 255, 255, 0.5);
   box-shadow: 0 4rpx 16rpx rgba(255, 126, 179, 0.2);
   flex-shrink: 0;
+  position: relative;
+  z-index: 1;
 }
 
 .avatar-emoji {
@@ -49,10 +73,11 @@
   color: #FFFFFF;
   display: block;
   text-shadow: 0 2rpx 8rpx rgba(0, 0, 0, 0.1);
+  position: relative;
+  z-index: 1;
 }
 
 /* ========== Stats Row ========== */
-/* Overlaps the header with negative margin, floating above via z-index */
 .stats-row {
   display: flex;
   justify-content: space-around;
@@ -98,7 +123,7 @@
 .menu-item {
   display: flex;
   align-items: center;
-  padding: 32rpx;
+  padding: 28rpx 32rpx;
   border-bottom: 1rpx solid var(--color-border-light);
   transition: background 0.15s ease;
 }
@@ -111,10 +136,20 @@
   background: var(--color-bg-hover);
 }
 
-.menu-item .icon {
-  font-size: 40rpx;
-  margin-right: 24rpx;
+.menu-icon-wrap {
+  width: 56rpx;
+  height: 56rpx;
+  border-radius: 16rpx;
+  background: linear-gradient(135deg, #FFF2F7, #F3EAFF);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-right: 20rpx;
   flex-shrink: 0;
+}
+
+.menu-item .icon {
+  font-size: 32rpx;
 }
 
 .menu-item .title {
@@ -145,4 +180,5 @@
 
 .logout-btn:active {
   background: var(--color-bg-hover);
+  transform: scale(0.98);
 }

@@ -1,7 +1,5 @@
 /* ========================================
    Coupon List (Redeemable) - Dreamy Candy Theme
-   Points bar with warm accent, coupon cards
-   with orange gradient top strip
    ======================================== */
 
 /* ========== Page Container ========== */
@@ -12,17 +10,26 @@
 }
 
 /* ========== Points Bar ========== */
-/* Shows current available points with warm accent color */
 .points-bar {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  background: #FFFFFF;
+  background: linear-gradient(135deg, #FFFFFF, #FFF8FB);
   border-radius: var(--radius-lg);
-  padding: 32rpx;
+  padding: 28rpx 32rpx;
   margin: 32rpx;
   box-shadow: var(--shadow-card);
   border: 1rpx solid rgba(255, 126, 179, 0.06);
+}
+
+.points-bar-left {
+  display: flex;
+  align-items: center;
+  gap: 12rpx;
+}
+
+.points-bar-icon {
+  font-size: 32rpx;
 }
 
 .points-bar .label {
@@ -31,7 +38,7 @@
 }
 
 .points-bar .value {
-  font-size: 40rpx;
+  font-size: 44rpx;
   font-weight: var(--weight-bold);
   color: var(--color-accent);
   text-shadow: 0 2rpx 8rpx rgba(255, 183, 77, 0.15);
@@ -46,13 +53,17 @@
 .coupon-card {
   background: #FFFFFF;
   border-radius: var(--radius-lg);
-  padding: 48rpx;
+  padding: 40rpx;
   margin-bottom: 32rpx;
   box-shadow: var(--shadow-card);
   border: 1rpx solid rgba(255, 126, 179, 0.06);
   position: relative;
   overflow: hidden;
   transition: transform 0.2s ease;
+}
+
+.coupon-card:active {
+  transform: scale(0.98);
 }
 
 /* Orange gradient top strip via pseudo-element */
@@ -87,8 +98,8 @@
   display: flex;
   align-items: center;
   gap: 24rpx;
-  margin-top: 32rpx;
-  padding-top: 32rpx;
+  margin-top: 28rpx;
+  padding-top: 28rpx;
   border-top: 1rpx dashed var(--color-border);
   flex-wrap: wrap;
 }
@@ -100,5 +111,5 @@
 
 /* Redeem button inherits from global .btn-primary */
 .coupon-card .btn-primary {
-  margin-top: 32rpx;
+  margin-top: 28rpx;
 }

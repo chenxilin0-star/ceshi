@@ -1,7 +1,10 @@
 <view class="page-product-list">
   <!-- Points bar -->
   <view class="points-bar">
-    <text class="label">当前可用积分</text>
+    <view class="points-bar-left">
+      <text class="points-bar-icon">💎</text>
+      <text class="label">当前可用积分</text>
+    </view>
     <text class="value">{{totalPoints}}</text>
   </view>
 

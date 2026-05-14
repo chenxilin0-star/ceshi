@@ -1,7 +1,5 @@
 /* ========================================
    My Coupons - Dreamy Candy Theme
-   Coupon cards with peach-tinted top strip,
-   soft macaron pinks, fluffy rounded cards
    ======================================== */
 
 /* ========== Page Container ========== */
@@ -68,6 +66,10 @@
   position: relative;
   overflow: hidden;
   transition: transform 0.2s ease;
+}
+
+.coupon-item:active {
+  transform: scale(0.98);
 }
 
 /* Peach-tinted top accent strip via pseudo-element */
