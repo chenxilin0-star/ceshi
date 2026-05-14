@@ -43,6 +43,28 @@ run('all homepage test themes generate a complete report', function () {
   })
 })
 
+run('different choices in the same personality test produce different matched report content', function () {
+  var extrovert = sample('校园人设', '你的校园隐藏人设', '班级显眼包')
+  var quiet = sample('校园人设', '你的校园隐藏人设', '隐藏观察者')
+
+  assert.notDeepStrictEqual(extrovert.resultTags, quiet.resultTags)
+  assert.notStrictEqual(extrovert.insightCards[0].text, quiet.insightCards[0].text)
+  assert.notStrictEqual(extrovert.actionList[0].text, quiet.actionList[0].text)
+  assert.ok(extrovert.insightCards[0].text.indexOf('活跃') >= 0 || extrovert.insightCards[0].text.indexOf('气氛') >= 0)
+  assert.ok(quiet.insightCards[0].text.indexOf('观察') >= 0 || quiet.insightCards[0].text.indexOf('安静') >= 0)
+})
+
+run('different score results in the same status test produce different matched report content', function () {
+  var low = sample('摆烂回血', '摆烂回血指数测试', '电量严重不足')
+  var high = sample('摆烂回血', '摆烂回血指数测试', '满电出发')
+
+  assert.notDeepStrictEqual(low.traitBars, high.traitBars)
+  assert.notStrictEqual(low.insightCards[0].text, high.insightCards[0].text)
+  assert.notStrictEqual(low.actionList[0].text, high.actionList[0].text)
+  assert.ok(low.summaryText.indexOf('休息') >= 0 || low.summaryText.indexOf('回血') >= 0)
+  assert.ok(high.summaryText.indexOf('输出') >= 0 || high.summaryText.indexOf('推进') >= 0)
+})
+
 run('missing raw result fields still produce safe fallback report', function () {
   var result = presenter.normalizeResult({})
   assert.strictEqual(result.resultTitle, '你的校园趣测结果已生成')
