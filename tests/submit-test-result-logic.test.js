@@ -172,3 +172,42 @@ run('今日状态和摆烂回血泛化结果按分数区间生成具体状态', 
   assert.ok(low.resultDesc.indexOf('测试完成') === -1)
   assert.ok(high.resultDesc.indexOf('已完成') === -1)
 })
+
+run('MBTI恋爱人格不能误判成校园班级人设', function () {
+  var loveTest = {
+    title: '你的MBTI恋爱人格测试',
+    category: '恋爱人格',
+    scoringType: 'dimension',
+    resultRules: [{ dimension: '稳定陪伴', title: '低调实力派', description: '你的人设不是传统卷王，而是低调但能交付。', emoji: '📚' }]
+  }
+  var loveQuestions = [
+    { text: '聊天时你更像？', options: [{ text: '稳定回复，认真接住情绪', dimension: '稳定陪伴' }, { text: '主动制造惊喜', dimension: '浪漫表达' }] },
+    { text: '遇到矛盾你会？', options: [{ text: '先安抚对方再一起解决', dimension: '稳定陪伴' }, { text: '冷静分析边界', dimension: '理性边界' }] },
+    { text: '喜欢一个人时你会？', options: [{ text: '用持续行动证明在意', dimension: '稳定陪伴' }, { text: '直接表达心动', dimension: '直球心动' }] }
+  ]
+  var result = resultLogic.calculateTestResult(loveTest, loveQuestions, [0, 0, 0])
+  var campusTitles = ['班级显眼包', '专业摸鱼选手', '低调实力派', '隐藏观察者']
+
+  assert.strictEqual(campusTitles.indexOf(result.resultTitle), -1)
+  assert.ok(result.resultTitle.indexOf('恋爱') >= 0 || result.resultTitle.indexOf('陪伴') >= 0)
+  assert.ok(result.resultDesc.indexOf('恋爱') >= 0 || result.resultDesc.indexOf('亲密关系') >= 0)
+  assert.strictEqual(result.dominantDimension, '稳定陪伴')
+})
+
+run('未知首页测试按主导维度生成对应结果，不退回已生成', function () {
+  var unknownTest = {
+    title: '周末出行人格测试',
+    category: '校园趣测',
+    scoringType: 'dimension',
+    resultRules: []
+  }
+  var questions = [
+    { text: '周末你想怎么安排？', options: [{ text: '查路线做攻略', dimension: '计划控' }, { text: '临时出发', dimension: '随性派' }] },
+    { text: '朋友问去哪？', options: [{ text: '列出备选清单', dimension: '计划控' }, { text: '到门口再说', dimension: '随性派' }] }
+  ]
+  var result = resultLogic.calculateTestResult(unknownTest, questions, [0, 0])
+
+  assert.ok(result.resultTitle.indexOf('计划控') >= 0)
+  assert.ok(result.resultTitle.indexOf('已生成') === -1)
+  assert.ok(result.resultDesc.indexOf('周末出行人格测试') >= 0)
+})

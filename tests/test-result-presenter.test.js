@@ -246,6 +246,49 @@ run('generic daily and recharge score results become concrete score-band reports
   assert.ok(recharge.shareLine.indexOf('结果已生成') === -1)
 })
 
+run('MBTI恋爱人格结果页不能套用校园班级人设文案', function () {
+  var result = presenter.normalizeResult({
+    testTitle: '你的MBTI恋爱人格测试',
+    category: '恋爱人格',
+    resultTitle: '低调实力派',
+    resultDesc: '你的人设不是传统“卷王”，而是低调但能交付的稳定输出者。',
+    resultEmoji: '💗',
+    questionCount: 3,
+    answerSummary: [
+      { question: '聊天时你更像？', selectedText: '稳定回复，认真接住情绪', dimension: '稳定陪伴' },
+      { question: '遇到矛盾你会？', selectedText: '先安抚对方再一起解决', dimension: '稳定陪伴' },
+      { question: '喜欢一个人时你会？', selectedText: '用持续行动证明在意', dimension: '稳定陪伴' }
+    ]
+  })
+  var campusTitles = ['班级显眼包', '专业摸鱼选手', '低调实力派', '隐藏观察者']
+
+  assert.strictEqual(campusTitles.indexOf(result.resultTitle), -1)
+  assert.ok(result.resultTitle.indexOf('恋爱') >= 0 || result.resultTitle.indexOf('陪伴') >= 0)
+  assert.ok(result.resultTheme.name.indexOf('恋爱') >= 0 || result.resultTheme.name.indexOf('关系') >= 0)
+  assert.ok(result.summaryText.indexOf('班级') === -1)
+  assert.ok(result.summaryText.indexOf('恋爱') >= 0 || result.summaryText.indexOf('亲密关系') >= 0)
+})
+
+run('未知首页测试结果页按主导维度生成专属文案', function () {
+  var result = presenter.normalizeResult({
+    testTitle: '周末出行人格测试',
+    category: '校园趣测',
+    resultTitle: '测试完成',
+    resultDesc: '感谢你的参与，你已完成本次测试。',
+    resultEmoji: '🧭',
+    questionCount: 2,
+    answerSummary: [
+      { question: '周末你想怎么安排？', selectedText: '查路线做攻略', dimension: '计划控' },
+      { question: '朋友问去哪？', selectedText: '列出备选清单', dimension: '计划控' }
+    ]
+  })
+
+  assert.ok(result.resultTitle.indexOf('计划控') >= 0)
+  assert.ok(result.resultTitle.indexOf('测试完成') === -1)
+  assert.ok(result.summaryText.indexOf('周末出行人格测试') >= 0)
+  assert.ok(result.reasonList.length >= 2)
+})
+
 run('missing raw result fields still produce safe fallback report', function () {
   var result = presenter.normalizeResult({})
   assert.strictEqual(result.resultTitle, '你的校园趣测结果已生成')

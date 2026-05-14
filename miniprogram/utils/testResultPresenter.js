@@ -8,6 +8,9 @@ function includesAny(text, words) {
 
 function detectTheme(result) {
   var text = [result.category || '', result.testTitle || '', result.resultTitle || ''].join('')
+  if (includesAny(text, ['恋爱', '爱情', '心动', '伴侣', '对象', '脱单', '喜欢的人', '暧昧', '亲密关系'])) {
+    return { key: 'love', name: '恋爱人格报告', icon: '💗', gradientClass: 'theme-persona' }
+  }
   if (includesAny(text, ['消费', '购物', '预算', '花钱', '下单', '价格', '性价比'])) {
     return { key: 'consume', name: '消费风格报告', icon: '🛍️', gradientClass: 'theme-consume' }
   }
@@ -214,7 +217,20 @@ function getProfile(resultTitle) {
 function isGenericResultTitle(title) {
   title = String(title || '').replace(/\s/g, '')
   if (!title) return true
-  return title === '测试完成' || title === '完成测试' || title === '已完成' || title === '结果已生成' || title === '你的校园趣测结果已生成' || title === '你的校园隐藏人设已生成' || title === '干饭奶茶人格已生成' || title === '你的校园搭子属性已生成' || title === '你的今日校园状态已生成'
+  return title === '测试完成' || title === '完成测试' || title === '已完成' || title === '结果已生成' || title === '你的校园趣测结果已生成' || title === '你的校园隐藏人设已生成' || title === '干饭奶茶人格已生成' || title === '你的校园搭子属性已生成' || title === '你的今日校园状态已生成' || title === '你的恋爱人格结果已生成' || title.lastIndexOf('已生成') === title.length - 3
+}
+
+function isMismatchedResultTitle(result) {
+  var domain = inferDomain(result)
+  var title = String((result && result.resultTitle) || '')
+  var personaTitles = ['班级显眼包', '专业摸鱼选手', '低调实力派', '隐藏观察者']
+  var foodTitles = ['奶茶续命型选手', '食堂干饭王', '课桌零食库管理员', '佛系饮食派']
+  var socialTitles = ['气氛组组长', '树洞倾听担当', '说走就走行动派', '朋友圈军师']
+  if (domain === 'love' && (personaTitles.indexOf(title) >= 0 || foodTitles.indexOf(title) >= 0 || socialTitles.indexOf(title) >= 0)) return true
+  if (domain === 'food' && personaTitles.indexOf(title) >= 0) return true
+  if (domain === 'social' && personaTitles.indexOf(title) >= 0) return true
+  if (domain === 'persona' && foodTitles.indexOf(title) >= 0) return true
+  return false
 }
 
 function isGenericDescription(desc) {
@@ -224,12 +240,13 @@ function isGenericDescription(desc) {
 
 function inferDomain(result) {
   var text = [result.category || '', result.testTitle || '', result.resultTitle || ''].join('')
+  if (includesAny(text, ['恋爱', '爱情', '心动', '伴侣', '对象', '脱单', '喜欢的人', '暧昧', '亲密关系'])) return 'love'
   if (includesAny(text, ['消费', '购物', '预算', '花钱', '下单', '价格', '性价比'])) return 'consume'
   if (includesAny(text, ['干饭', '奶茶', '食堂', '饮食', '零食'])) return 'food'
   if (includesAny(text, ['今日校园状态', '今日状态'])) return 'daily'
-  if (includesAny(text, ['人格', '性格', '人设'])) return 'persona'
   if (includesAny(text, ['朋友', '社交', '搭子'])) return 'social'
   if (includesAny(text, ['状态', '电量', '回血', '摆烂'])) return 'recharge'
+  if (includesAny(text, ['人格', '性格', '人设', 'MBTI'])) return 'persona'
   return 'general'
 }
 
@@ -244,6 +261,7 @@ function scoreRatio(result) {
 function domainLabel(domain) {
   var labels = {
     consume: '消费决策',
+    love: '恋爱倾向',
     persona: '人格倾向',
     food: '干饭补给',
     social: '关系角色',
@@ -306,6 +324,51 @@ function buildGeneratedProfileFromTitle(title, emoji, dominantTrait) {
   return generated
 }
 
+function buildDynamicDimensionProfile(result, domain, dim) {
+  if (!dim) return null
+  var suffixMap = {
+    love: '型恋爱人格',
+    persona: '型校园人设',
+    food: '型干饭人格',
+    social: '型朋友角色',
+    consume: '型消费风格',
+    daily: '型今日状态',
+    recharge: '型能量状态',
+    general: '型结果'
+  }
+  var sceneMap = {
+    love: '亲密关系里的表达方式',
+    persona: '校园/班级场景里的表现方式',
+    food: '干饭、奶茶和日常补给偏好',
+    social: '朋友相处和群聊互动方式',
+    consume: '消费决策和预算取舍方式',
+    daily: '今天的校园状态和行动节奏',
+    recharge: '今天的能量状态和回血方式',
+    general: '这个测试主题下的偏好组合'
+  }
+  var title = dim
+  if (title.indexOf('型') < 0 && title.indexOf('派') < 0 && title.indexOf('者') < 0 && title.indexOf('控') < 0 && title.indexOf('担当') < 0) title += (suffixMap[domain] || suffixMap.general)
+  var emoji = domain === 'love' ? '💗' : (domain === 'consume' ? '🛍️' : (domain === 'recharge' ? '🔋' : '🌟'))
+  var scene = sceneMap[domain] || sceneMap.general
+  return {
+    title: title,
+    emoji: emoji,
+    tags: [title, dim, domainLabel(domain), '选择匹配'],
+    lead: '你的选择集中在「' + dim + '」这一组线索上。',
+    cards: [
+      card(emoji, '你的结果类型', '在「' + (result.testTitle || '本次测试') + '」里，你更接近「' + title + '」，不是简单的完成提示。'),
+      card('🧩', '为什么是这个结果', '系统看到你的多道选择都指向「' + dim + '」，说明你在' + scene + '里有比较明确的偏好。'),
+      card('✨', '优势与提醒', '优势是倾向清楚、容易形成自己的节奏；提醒是结果只代表这次选择，不要被单一标签限制。')
+    ],
+    bars: [bar(dim, 88, 'pink'), bar('匹配线索', 82, 'purple'), bar('弹性空间', 64, 'blue')],
+    actions: [action('🧭', '把这个结果当作一个观察角度，不急着给自己下定义。'), action('💬', '回看选择线索，找出最像你的那一题。'), action('✨', '下一次换不同选择再测，看看结果会不会变化。')],
+    share: '我的结果是「' + title + '」，它来自这次选择里的「' + dim + '」线索。',
+    dominantTrait: dim,
+    matchPercent: 88,
+    description: '你在「' + (result.testTitle || '本次测试') + '」中的选择集中指向「' + dim + '」，所以结果落在「' + title + '」。这说明你在' + scene + '里有更明显的偏好，本内容仅作娱乐参考。'
+  }
+}
+
 function buildDimensionGeneratedProfile(result, domain) {
   var dim = dominantDimensionFromResult(result)
   var personaTitles = {
@@ -326,8 +389,8 @@ function buildDimensionGeneratedProfile(result, domain) {
     '行动派': ['说走就走行动派', '🏃', '靠谱执行'],
     '军师型': ['朋友圈军师', '🧠', '理性分析']
   }
-  var config = domain === 'persona' ? personaTitles[dim] : (domain === 'food' ? foodTitles[dim] : socialTitles[dim])
-  if (!config) return null
+  var config = domain === 'persona' ? personaTitles[dim] : (domain === 'food' ? foodTitles[dim] : (domain === 'social' ? socialTitles[dim] : null))
+  if (!config) return buildDynamicDimensionProfile(result, domain, dim)
   return buildGeneratedProfileFromTitle(config[0], config[1], config[2])
 }
 
@@ -353,6 +416,11 @@ function buildScoreGeneratedProfile(result, domain, ratio) {
     else if (ratio <= 65) config = ['半血待机中', '🔋', '半血待机']
     else if (ratio <= 85) config = ['电量充足', '🔋', '稳定输出']
     else config = ['满电出发', '⚡', '满电输出']
+  } else if (domain === 'love') {
+    if (ratio <= 35) return buildDynamicDimensionProfile(result, domain, '慢热观察')
+    if (ratio <= 65) return buildDynamicDimensionProfile(result, domain, '稳定陪伴')
+    if (ratio <= 85) return buildDynamicDimensionProfile(result, domain, '直球表达')
+    return buildDynamicDimensionProfile(result, domain, '热烈投入')
   }
   if (!config) return null
   return buildGeneratedProfileFromTitle(config[0], config[1], config[2])
@@ -361,11 +429,11 @@ function buildScoreGeneratedProfile(result, domain, ratio) {
 function buildGenericProfile(result) {
   var domain = inferDomain(result)
   var ratio = scoreRatio(result)
-  if (domain === 'persona' || domain === 'food' || domain === 'social') {
+  if (domain === 'persona' || domain === 'food' || domain === 'social' || domain === 'love' || domain === 'general' || domain === 'consume') {
     var dimensionProfile = buildDimensionGeneratedProfile(result, domain)
     if (dimensionProfile) return dimensionProfile
   }
-  if (domain === 'persona' || domain === 'food' || domain === 'daily' || domain === 'recharge') {
+  if (domain === 'persona' || domain === 'food' || domain === 'daily' || domain === 'recharge' || domain === 'love' || domain === 'general') {
     var scoreProfile = buildScoreGeneratedProfile(result, domain, ratio)
     if (scoreProfile) return scoreProfile
   }
@@ -427,6 +495,7 @@ function buildTags(theme, result, profile) {
   var title = result.resultTitle || ''
   var map = {
     consume: ['消费风格', '预算偏好', '决策习惯'],
+    love: ['恋爱人格', '关系倾向', '选择匹配'],
     daily: ['今日状态', '校园节奏', '轻松参考'],
     persona: ['隐藏人设', '班级角色', '专属气质'],
     food: ['干饭属性', '快乐补给', '校园能量'],
@@ -447,6 +516,7 @@ function buildSummary(result, theme, profile) {
   }
   var prefixMap = {
     consume: '这份报告会把你的消费选择翻译成具体的决策风格，而不是一句完成提示。',
+    love: '这份报告会把你的选择翻译成亲密关系里的表达倾向，而不是套用校园班级人设。',
     daily: '这不是一句简单评价，而是一张属于你今天的校园状态卡。',
     persona: '这个结果把你在校园里的一个高辨识度侧面放大了出来。',
     food: '你的选择透露出一种很有画面感的校园补给方式。',
@@ -459,6 +529,7 @@ function buildSummary(result, theme, profile) {
 
 function buildSuggestion(result) {
   var text = [result.category || '', result.testTitle || '', result.resultTitle || ''].join('')
+  if (includesAny(text, ['恋爱', '爱情', '心动', '伴侣', '对象', '脱单', '喜欢的人', '暧昧', '亲密关系'])) return '关系里可以保留自己的节奏，表达喜欢也要尊重边界和真实感受。'
   if (includesAny(text, ['干饭', '奶茶', '消费', '食堂'])) return '先给自己补点能量，再处理一个最容易完成的小任务。'
   if (includesAny(text, ['朋友', '同桌', '群聊', '社交', '搭子'])) return '找一个熟悉的人聊两句，轻松一点就好，不用强行营业。'
   if (includesAny(text, ['摆烂', '回血', '拖延', '犯困', '电量'])) return '允许自己慢一点，但别完全关机。先做一个 5 分钟能完成的小动作。'
@@ -490,6 +561,7 @@ function buildTraitBars(result, theme, profile) {
   var base = clamp(Math.round((score / Math.max(questionCount * 4, 1)) * 100), 28, 96)
   var configs = {
     consume: ['预算控制', '体验追求', '冲动购买'],
+    love: ['表达稳定', '心动主动', '边界感'],
     daily: ['在线感', '松弛度', '行动力'],
     persona: ['辨识度', '稳定感', '反差感'],
     food: ['快乐补给', '分享欲', '续航力'],
@@ -510,6 +582,7 @@ function buildActionList(result, theme, profile) {
   var suggestion = result.resultSuggestion || buildSuggestion(result)
   var actions = {
     consume: [action('🧾', '先把想买的东西分成刚需、改善、冲动三类。'), action('🛒', suggestion), action('⏳', '非刚需消费先等 24 小时再决定。')],
+    love: [action('💗', '把喜欢表达得更具体一点，但不要急着要求结果。'), action('🧭', suggestion), action('💬', '遇到误会先确认感受，再讨论对错。')],
     daily: [action('☀️', '给今天选一个最想完成的小目标。'), action('🍬', suggestion), action('📌', '晚上回看一下：今天哪一刻最像这个结果？')],
     persona: [action('📸', '把这个结果当作今天的人设卡保存下来。'), action('💬', '找同桌/朋友问问：他们觉得像不像？'), action('✨', suggestion)],
     food: [action('🧋', '给自己安排一个不超预算的小补给。'), action('🍚', '认真吃一顿饭，别只靠零食续命。'), action('🌈', suggestion)],
@@ -566,7 +639,7 @@ function normalizeResult(result) {
   normalized.testTitle = normalizeTestTitleForDisplay(normalized)
 
   var generatedProfile = null
-  if (isGenericResultTitle(normalized.resultTitle) || isGenericDescription(normalized.resultDesc)) {
+  if (isGenericResultTitle(normalized.resultTitle) || isGenericDescription(normalized.resultDesc) || isMismatchedResultTitle(normalized)) {
     generatedProfile = buildGenericProfile(normalized)
     if (generatedProfile) {
       normalized.resultTitle = generatedProfile.title

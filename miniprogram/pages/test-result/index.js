@@ -37,7 +37,7 @@ Page({
       var idx = answers[i]
       var option = q.options && q.options[idx] ? q.options[idx] : null
       summary.push({
-        question: q.title || q.question || ('第' + (i + 1) + '题'),
+        question: q.text || q.title || q.question || ('第' + (i + 1) + '题'),
         selectedText: option ? (option.text || option.label || '') : '',
         score: option ? (option.score || 0) : 0,
         dimension: option ? (option.dimension || '') : ''

@@ -35,6 +35,22 @@ function buildResultDescription(test, resultTitle, score, questionCount) {
   return base + scene + ' 本内容仅作校园娱乐参考。'
 }
 
+function buildAnswerSummary(questions, answers) {
+  var summary = []
+  for (var i = 0; i < questions.length; i++) {
+    var q = questions[i] || {}
+    var idx = answers[i]
+    var option = q.options && q.options[idx] ? q.options[idx] : null
+    summary.push({
+      question: q.text || q.title || q.question || ('第' + (i + 1) + '题'),
+      selectedText: option ? (option.text || option.label || '') : '',
+      score: option ? (option.score || 0) : 0,
+      dimension: option ? (option.dimension || '') : ''
+    })
+  }
+  return summary
+}
+
 exports.main = async (event, context) => {
   try {
     const { OPENID } = cloud.getWXContext()
@@ -71,6 +87,7 @@ exports.main = async (event, context) => {
     var resultTitle = calculated.resultTitle
     var resultDesc = calculated.resultDesc
     var resultEmoji = calculated.resultEmoji
+    var answerSummary = buildAnswerSummary(questions, answers)
 
     // 5. 获取用户信息
     var userRes = await db.collection('users').where({ _openid: OPENID }).get()
@@ -88,6 +105,7 @@ exports.main = async (event, context) => {
         testTitle: test.title,
         category: test.category,
         answers: answers,
+        answerSummary: answerSummary,
         score: score,
         resultTitle: resultTitle,
         resultDesc: resultDesc,
@@ -107,6 +125,7 @@ exports.main = async (event, context) => {
       resultTitle: resultTitle,
       resultDesc: resultDesc,
       resultEmoji: resultEmoji,
+      answerSummary: answerSummary,
       dominantDimension: calculated.dominantDimension || '',
       dimensionCounts: calculated.dimensionCounts || {},
       questionCount: questions.length

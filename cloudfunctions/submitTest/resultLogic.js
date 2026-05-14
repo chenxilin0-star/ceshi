@@ -92,16 +92,18 @@ var RECHARGE_SCORE_PROFILES = [
 
 function getDomain(test) {
   var text = [(test && test.category) || '', (test && test.title) || ''].join('')
+  if (includesAny(text, ['恋爱', '爱情', '心动', '伴侣', '对象', '脱单', '喜欢的人', '暧昧', '亲密关系'])) return 'love'
   if (includesAny(text, ['干饭', '奶茶', '食堂', '饮食', '零食'])) return 'food'
-  if (includesAny(text, ['人设', '性格', '人格', '班级', '校园隐藏'])) return 'persona'
-  if (includesAny(text, ['朋友', '搭子', '社交', '群聊'])) return 'social'
+  if (includesAny(text, ['朋友', '搭子', '社交', '群聊', '同桌'])) return 'social'
   if (includesAny(text, ['状态', '摆烂', '回血', '电量'])) return 'state'
   if (includesAny(text, ['消费', '购物', '预算'])) return 'consume'
+  if (includesAny(text, ['人设', '性格', '人格', '班级', '校园隐藏', 'MBTI'])) return 'persona'
   return 'general'
 }
 
 function getFallbackTitle(test) {
   var domain = getDomain(test)
+  if (domain === 'love') return '你的恋爱人格结果已生成'
   if (domain === 'food') return '干饭奶茶人格已生成'
   if (domain === 'social') return '你的校园搭子属性已生成'
   if (domain === 'persona') return '你的校园隐藏人设已生成'
@@ -109,12 +111,50 @@ function getFallbackTitle(test) {
   return '你的校园趣测结果已生成'
 }
 
+function domainSuffix(domain) {
+  var map = {
+    love: '型恋爱人格',
+    persona: '型校园人设',
+    food: '型干饭人格',
+    social: '型朋友角色',
+    consume: '型消费风格',
+    state: '型状态',
+    general: '型结果'
+  }
+  return map[domain] || map.general
+}
+
+function domainScene(domain) {
+  var map = {
+    love: '亲密关系里的表达方式',
+    persona: '校园/班级场景里的表现方式',
+    food: '干饭、奶茶和日常补给偏好',
+    social: '朋友相处和群聊互动方式',
+    consume: '消费决策和预算取舍方式',
+    state: '今天的能量状态和行动节奏',
+    general: '这个测试主题下的偏好组合'
+  }
+  return map[domain] || map.general
+}
+
+function buildDynamicDimensionProfile(test, dimension) {
+  if (!dimension) return null
+  var domain = getDomain(test)
+  var title = dimension
+  if (title.indexOf('型') < 0 && title.indexOf('派') < 0 && title.indexOf('者') < 0 && title.indexOf('控') < 0) title += domainSuffix(domain)
+  var testTitle = (test && test.title) || '本次测试'
+  var scene = domainScene(domain)
+  var desc = '你的选择集中在「' + dimension + '」这一组线索上，所以在「' + testTitle + '」中更接近「' + title + '」。这说明你在' + scene + '里有比较稳定的偏好：优势是方向感清楚，提醒是不要被单一标签限制，具体相处和行动还要看真实场景。本内容仅作娱乐参考。'
+  var emoji = domain === 'love' ? '💗' : (domain === 'consume' ? '🛍️' : (domain === 'state' ? '✨' : '🌟'))
+  return profile(title, desc, emoji, dimension)
+}
+
 function getDimensionFallbackProfile(test, dimension) {
   var domain = getDomain(test)
-  if (domain === 'persona') return PERSONA_PROFILES[dimension] || null
-  if (domain === 'food') return FOOD_PROFILES[dimension] || null
-  if (domain === 'social') return SOCIAL_PROFILES[dimension] || null
-  return null
+  if (domain === 'persona') return PERSONA_PROFILES[dimension] || buildDynamicDimensionProfile(test, dimension)
+  if (domain === 'food') return FOOD_PROFILES[dimension] || buildDynamicDimensionProfile(test, dimension)
+  if (domain === 'social') return SOCIAL_PROFILES[dimension] || buildDynamicDimensionProfile(test, dimension)
+  return buildDynamicDimensionProfile(test, dimension)
 }
 
 function scoreProfileByRatio(profiles, ratio) {
@@ -150,7 +190,14 @@ function getScoreFallbackProfile(test, score, questionCount) {
     if (ratio <= 65) return profile('理性平衡型消费者', '你会在预算、实用和喜欢之间找平衡：不盲目跟风，也愿意为真正高频使用或让自己开心的东西买单。', '⚖️', '')
     return profile('体验悦己型消费者', '你更容易被体验感、喜欢程度和情绪价值打动。优势是很会照顾自己的感受，提醒是连续被种草时先暂停一下。', '🛍️', '')
   }
-  return null
+  var band = ratio <= 35 ? '低调观察' : (ratio <= 65 ? '平衡适应' : (ratio <= 85 ? '主动表达' : '高能投入'))
+  if (domain === 'love') {
+    if (ratio <= 35) band = '慢热观察'
+    else if (ratio <= 65) band = '稳定陪伴'
+    else if (ratio <= 85) band = '直球表达'
+    else band = '热烈投入'
+  }
+  return buildDynamicDimensionProfile(test, band)
 }
 
 function buildResultDescription(test, resultTitle, score, questionCount) {
@@ -162,7 +209,20 @@ function buildResultDescription(test, resultTitle, score, questionCount) {
 
 function isGenericTitle(title) {
   title = String(title || '').replace(/\s/g, '')
-  return !title || title === '测试完成' || title === '完成测试' || title === '已完成' || title === '结果已生成' || title === '你的校园趣测结果已生成' || title === '你的校园隐藏人设已生成' || title === '干饭奶茶人格已生成' || title === '你的校园搭子属性已生成' || title === '你的今日校园状态已生成'
+  return !title || title === '测试完成' || title === '完成测试' || title === '已完成' || title === '结果已生成' || title === '你的校园趣测结果已生成' || title === '你的校园隐藏人设已生成' || title === '干饭奶茶人格已生成' || title === '你的校园搭子属性已生成' || title === '你的今日校园状态已生成' || title === '你的恋爱人格结果已生成' || title.lastIndexOf('已生成') === title.length - 3
+}
+
+function isMismatchedTitleForDomain(test, title) {
+  var domain = getDomain(test)
+  title = String(title || '')
+  var personaTitles = ['班级显眼包', '专业摸鱼选手', '低调实力派', '隐藏观察者']
+  var foodTitles = ['奶茶续命型选手', '食堂干饭王', '课桌零食库管理员', '佛系饮食派']
+  var socialTitles = ['气氛组组长', '树洞倾听担当', '说走就走行动派', '朋友圈军师']
+  if (domain === 'love' && (personaTitles.indexOf(title) >= 0 || foodTitles.indexOf(title) >= 0 || socialTitles.indexOf(title) >= 0)) return true
+  if (domain === 'food' && personaTitles.indexOf(title) >= 0) return true
+  if (domain === 'social' && personaTitles.indexOf(title) >= 0) return true
+  if (domain === 'persona' && foodTitles.indexOf(title) >= 0) return true
+  return false
 }
 
 function isGenericDescription(desc) {
@@ -209,7 +269,7 @@ function calculateDimensionResult(test, questions, answers) {
   }
 
   var rule = matchRuleByDimension(test, maxDim)
-  if (rule && (isGenericTitle(rule.title) || isGenericDescription(rule.description))) rule = null
+  if (rule && (isGenericTitle(rule.title) || isGenericDescription(rule.description) || isMismatchedTitleForDomain(test, rule.title))) rule = null
   var fallback = !rule ? getDimensionFallbackProfile(test, maxDim) : null
   var resultTitle = (rule && rule.title) || (fallback && fallback.title) || getFallbackTitle(test)
   var resultDesc = (rule && rule.description) || (fallback && fallback.description) || buildResultDescription(test, resultTitle, maxCount, questions.length)
@@ -234,7 +294,7 @@ function calculateScoreResult(test, questions, answers) {
   }
 
   var rule = matchRuleByScore(test, score)
-  if (rule && (isGenericTitle(rule.title) || isGenericDescription(rule.description))) rule = null
+  if (rule && (isGenericTitle(rule.title) || isGenericDescription(rule.description) || isMismatchedTitleForDomain(test, rule.title))) rule = null
   var fallback = !rule ? getScoreFallbackProfile(test, score, questions.length) : null
   var resultTitle = (rule && rule.title) || (fallback && fallback.title) || getFallbackTitle(test)
   var resultDesc = (rule && rule.description) || (fallback && fallback.description) || buildResultDescription(test, resultTitle, score, questions.length)
