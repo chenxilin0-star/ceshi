@@ -1,78 +1,143 @@
 <view class="page-test-result">
   <!-- Loading -->
   <view class="loading-state" wx:if="{{loading}}">
-    <view class="loading-ring">
-      <text class="loading-emoji">✨</text>
+    <view class="loading-orbit">
+      <view class="loading-planet">✨</view>
+      <view class="loading-dot dot-a"></view>
+      <view class="loading-dot dot-b"></view>
     </view>
-    <text class="loading-text">正在生成你的测试报告…</text>
+    <text class="loading-title">正在生成你的专属报告</text>
+    <text class="loading-text">正在整理选择线索、人格关键词和今日建议…</text>
   </view>
 
   <!-- Result content -->
-  <view class="result-content" wx:if="{{!loading && result}}">
-    <!-- Header -->
-    <view class="result-header">
-      <view class="result-badge-wrap">
-        <text class="result-badge">{{result.resultEmoji || '🎉'}}</text>
+  <view class="result-content {{result.resultTheme.gradientClass}}" wx:if="{{!loading && result}}">
+    <!-- Report cover -->
+    <view class="report-hero">
+      <view class="hero-bg hero-bg-a"></view>
+      <view class="hero-bg hero-bg-b"></view>
+      <view class="report-topline">
+        <view class="report-type">
+          <text class="type-icon">{{result.resultTheme.icon}}</text>
+          <text>{{result.resultTheme.name}}</text>
+        </view>
+        <text class="report-status">已生成</text>
       </view>
-      <text class="result-label">测试完成</text>
+      <view class="avatar-orb">
+        <text class="result-badge">{{result.resultEmoji || '🌟'}}</text>
+      </view>
+      <text class="hero-kicker">你的本次测试结果是</text>
       <text class="result-title">{{result.resultTitle}}</text>
+      <text class="share-line">{{result.shareLine}}</text>
+      <view class="tag-row">
+        <view class="result-tag" wx:for="{{result.resultTags}}" wx:key="*this">#{{item}}</view>
+      </view>
     </view>
 
-    <!-- Score card -->
-    <view class="score-card">
-      <view class="score-circle">
-        <text class="score-number">{{result.score}}</text>
-        <text class="score-unit">分</text>
+    <!-- Snapshot card -->
+    <view class="snapshot-card">
+      <view class="snapshot-item main-score">
+        <text class="snapshot-num">{{result.score}}</text>
+        <text class="snapshot-label">匹配指数</text>
       </view>
-      <view class="score-meta">
-        <view class="meta-item">
-          <text class="meta-label">测试</text>
-          <text class="meta-value">{{result.testTitle}}</text>
+      <view class="snapshot-divider"></view>
+      <view class="snapshot-item">
+        <text class="snapshot-num small">{{result.questionCount || '-'}}</text>
+        <text class="snapshot-label">答题线索</text>
+      </view>
+      <view class="snapshot-divider"></view>
+      <view class="snapshot-item wide">
+        <text class="snapshot-name">{{result.testTitle}}</text>
+        <text class="snapshot-label">测试来源</text>
+      </view>
+    </view>
+
+    <!-- Summary -->
+    <view class="report-card summary-card">
+      <view class="section-head">
+        <view>
+          <text class="section-kicker">REPORT 01</text>
+          <text class="section-title">专属结果解读</text>
         </view>
-        <view class="meta-item">
-          <text class="meta-label">题数</text>
-          <text class="meta-value">{{result.questionCount || '-'}}题</text>
+        <text class="section-icon">🪐</text>
+      </view>
+      <text class="summary-text">{{result.summaryText}}</text>
+    </view>
+
+    <!-- Insight cards -->
+    <view class="report-card insights-card">
+      <view class="section-head compact">
+        <view>
+          <text class="section-kicker">REPORT 02</text>
+          <text class="section-title">你的三个隐藏线索</text>
+        </view>
+      </view>
+      <view class="insight-list">
+        <view class="insight-item" wx:for="{{result.insightCards}}" wx:key="title">
+          <view class="insight-icon">{{item.icon}}</view>
+          <view class="insight-copy">
+            <text class="insight-title">{{item.title}}</text>
+            <text class="insight-text">{{item.text}}</text>
+          </view>
         </view>
       </view>
     </view>
 
-    <!-- Analysis card -->
-    <view class="analysis-card">
-      <view class="card-title-row">
-        <text class="analysis-title">结果说明</text>
-        <text class="analysis-chip">校园娱乐参考</text>
+    <!-- Trait bars -->
+    <view class="report-card trait-card">
+      <view class="section-head compact">
+        <view>
+          <text class="section-kicker">REPORT 03</text>
+          <text class="section-title">状态指数面板</text>
+        </view>
       </view>
-      <text class="analysis-text">{{result.resultDesc}}</text>
+      <view class="trait-list">
+        <view class="trait-item" wx:for="{{result.traitBars}}" wx:key="label">
+          <view class="trait-row">
+            <text class="trait-label">{{item.label}}</text>
+            <text class="trait-value">{{item.value}}%</text>
+          </view>
+          <view class="trait-track">
+            <view class="trait-fill {{item.tone}}" style="width: {{item.value}}%;"></view>
+          </view>
+        </view>
+      </view>
     </view>
 
-    <view class="suggestion-card">
-      <view class="suggestion-icon-wrap">
-        <text class="suggestion-icon">💡</text>
+    <!-- Actions -->
+    <view class="report-card action-plan-card">
+      <view class="section-head compact">
+        <view>
+          <text class="section-kicker">REPORT 04</text>
+          <text class="section-title">今日可执行小任务</text>
+        </view>
+        <text class="section-icon">💡</text>
       </view>
-      <view class="suggestion-copy">
-        <text class="suggestion-title">给今天的小建议</text>
-        <text class="suggestion-text">{{result.resultSuggestion}}</text>
+      <view class="action-list">
+        <view class="action-plan-item" wx:for="{{result.actionList}}" wx:key="text">
+          <text class="action-icon">{{item.icon}}</text>
+          <text class="action-text">{{item.text}}</text>
+        </view>
       </view>
     </view>
 
     <view class="disclaimer-card">
-      <text>本结果仅用于校园娱乐和生活参考，不代表专业测评结论。</text>
+      <text>本结果基于你的选择生成，仅用于校园娱乐和生活参考，不代表正式结论，也不会定义真实的你。</text>
     </view>
 
-    <!-- Actions -->
+    <!-- Buttons -->
     <view class="action-buttons">
-      <view class="btn-primary" bindtap="retryTest">再测一次</view>
-      <view class="btn-outline" bindtap="goHome">回到首页</view>
-      <button class="btn-share" open-type="share">
-        分享给朋友
-      </button>
+      <view class="btn-primary" bindtap="retryTest">再测一次，看看会不会变</view>
+      <view class="btn-outline" bindtap="goHome">回到首页继续探索</view>
+      <button class="btn-share" open-type="share">分享我的结果卡</button>
     </view>
   </view>
 
   <!-- Empty state -->
   <view class="empty-state" wx:if="{{!loading && !result}}">
-    <text class="emoji">😕</text>
-    <text class="text">未找到测试结果</text>
+    <view class="empty-planet">🪐</view>
+    <text class="empty-title">没有找到测试报告</text>
+    <text class="empty-text">可能是结果已过期，回到首页重新测一次吧。</text>
     <view class="btn-primary btn-back" bindtap="goHome">回到首页</view>
   </view>
 </view>
