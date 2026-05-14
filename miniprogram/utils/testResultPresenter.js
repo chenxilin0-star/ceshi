@@ -8,6 +8,9 @@ function includesAny(text, words) {
 
 function detectTheme(result) {
   var text = [result.category || '', result.testTitle || '', result.resultTitle || ''].join('')
+  if (includesAny(text, ['消费', '购物', '预算', '花钱', '下单', '价格', '性价比'])) {
+    return { key: 'consume', name: '消费风格报告', icon: '🛍️', gradientClass: 'theme-consume' }
+  }
   if (includesAny(text, ['干饭', '奶茶', '食堂', '饮食', '零食'])) {
     return { key: 'food', name: '干饭能量报告', icon: '🧋', gradientClass: 'theme-food' }
   }
@@ -208,6 +211,93 @@ function getProfile(resultTitle) {
   return profiles[resultTitle] || null
 }
 
+function isGenericResultTitle(title) {
+  title = String(title || '').replace(/\s/g, '')
+  if (!title) return true
+  return title === '测试完成' || title === '完成测试' || title === '已完成' || title === '结果已生成' || title === '你的校园趣测结果已生成'
+}
+
+function isGenericDescription(desc) {
+  desc = String(desc || '')
+  return !desc || desc.indexOf('感谢你的参与') >= 0 || desc.indexOf('已完成本次测试') >= 0 || desc.indexOf('这份报告会把你的选择整理') >= 0
+}
+
+function inferDomain(result) {
+  var text = [result.category || '', result.testTitle || '', result.resultTitle || ''].join('')
+  if (includesAny(text, ['消费', '购物', '预算', '花钱', '下单', '价格', '性价比'])) return 'consume'
+  if (includesAny(text, ['人格', '性格', '人设'])) return 'persona'
+  if (includesAny(text, ['朋友', '社交', '搭子'])) return 'social'
+  if (includesAny(text, ['状态', '电量', '回血', '摆烂'])) return 'recharge'
+  return 'general'
+}
+
+function scoreRatio(result) {
+  var score = typeof result.score === 'number' ? result.score : parseInt(result.score || 0, 10) || 0
+  var questionCount = result.questionCount || 5
+  var maxScore = result.maxScore || questionCount * 4
+  if (!maxScore || maxScore < score) maxScore = Math.max(score, 1)
+  return clamp(Math.round((score / maxScore) * 100), 0, 100)
+}
+
+function domainLabel(domain) {
+  var labels = {
+    consume: '消费决策',
+    persona: '人格倾向',
+    social: '关系角色',
+    recharge: '能量状态',
+    general: '综合倾向'
+  }
+  return labels[domain] || '综合倾向'
+}
+
+function buildGenericProfile(result) {
+  var domain = inferDomain(result)
+  var ratio = scoreRatio(result)
+  if (domain === 'consume') {
+    if (ratio <= 35) {
+      return {
+        title: '精打细算型消费者',
+        emoji: '🧮',
+        tags: ['预算优先', '谨慎下单', '重视性价比', '低冲动消费'],
+        lead: '你的消费结果不是“测试完成”，而是偏向预算和必要性优先的决策方式。',
+        cards: [card('🧮', '你的消费类型', '你买东西前会先看预算、必要性和性价比，不太容易被限时折扣或朋友种草直接带走。'), card('🔍', '为什么是这个结果', '你的选择更偏向先比较、先判断、先确认是否真的需要，所以系统把你归到谨慎规划的一侧。'), card('⚖️', '优势与提醒', '优势是少踩冲动消费的坑；提醒是别把所有喜欢都压成“没必要”，真正高频使用的东西可以适当提高预算。')],
+        bars: [bar('预算控制', 92, 'purple'), bar('冲动购买', 24, 'blue'), bar('性价比敏感', 88, 'pink')],
+        actions: [action('🧾', '大额消费前保留“是否需要、是否常用、是否超预算”三问。'), action('🛒', '遇到促销先问：没有优惠我还会买吗？'), action('🎁', '给自己留一小部分悦己预算，避免长期压抑。')],
+        share: '我的消费风格是精打细算型，预算感和性价比雷达都在线。',
+        dominantTrait: '预算控制',
+        matchPercent: 82
+      }
+    }
+    if (ratio <= 65) {
+      return {
+        title: '理性平衡型消费者',
+        emoji: '⚖️',
+        tags: ['理性消费', '预算感强', '适度悦己', '比较后下单'],
+        lead: '你的消费风格处在理性和体验之间：会比较，也愿意为真正喜欢的东西买单。',
+        cards: [card('⚖️', '你的消费类型', '你不是纯省钱派，也不是冲动下单派。你通常会先判断需求和预算，再决定要不要为体验感买单。'), card('🧩', '为什么是这个结果', '你的答案显示你会受价格、实用性和心情共同影响，但关键消费前仍会保留比较和判断。'), card('🌿', '优势与提醒', '优势是平衡感不错；提醒是别在“想要”和“应该省”之间反复内耗，提前设好预算会更轻松。')],
+        bars: [bar('预算控制', 76, 'purple'), bar('体验追求', 66, 'pink'), bar('冲动购买', 42, 'blue')],
+        actions: [action('📌', '给常见消费设一个舒服的预算区间。'), action('🛍️', '想买时先放进清单，隔一晚还想要再下单。'), action('✨', '对高频使用的东西，可以适当为质量和体验付费。')],
+        share: '我的消费风格是理性平衡型，会比较，也会适度悦己。',
+        dominantTrait: '理性平衡',
+        matchPercent: 86
+      }
+    }
+    return {
+      title: '体验悦己型消费者',
+      emoji: '🛍️',
+      tags: ['悦己消费', '体验优先', '容易种草', '即时满足'],
+      lead: '你的消费风格更偏体验和情绪价值：喜欢能立刻提升心情、质感或社交体验的选择。',
+      cards: [card('🛍️', '你的消费类型', '你更容易被体验感、喜欢程度和即时快乐打动，消费对你来说不只是买东西，也是在给生活加一点质感。'), card('💗', '为什么是这个结果', '你的选择更偏向“喜欢就值得”“先让自己开心”，说明情绪价值和场景体验对你影响较大。'), card('🧯', '优势与提醒', '优势是很会照顾自己的感受；提醒是遇到连续种草时先暂停，避免快乐变成账单压力。')],
+      bars: [bar('体验追求', 92, 'pink'), bar('种草敏感', 82, 'purple'), bar('预算控制', 48, 'blue')],
+      actions: [action('💳', '给悦己消费单独设置上限，花得开心也花得安心。'), action('⏳', '非刚需商品先等 24 小时，过滤掉短暂冲动。'), action('🧾', '每周回看一次消费记录，找出最值得和最不值得的花费。')],
+      share: '我的消费风格是体验悦己型，喜欢为生活质感和快乐买单。',
+      dominantTrait: '体验悦己',
+      matchPercent: 88
+    }
+  }
+  return null
+}
+
 function buildFallbackDesc(result) {
   var title = result.resultTitle || '你的校园趣测结果'
   var testTitle = result.testTitle || '本次测试'
@@ -220,6 +310,7 @@ function buildTags(theme, result, profile) {
   if (profile && profile.tags && profile.tags.length) return profile.tags.slice(0, 4)
   var title = result.resultTitle || ''
   var map = {
+    consume: ['消费风格', '预算偏好', '决策习惯'],
     daily: ['今日状态', '校园节奏', '轻松参考'],
     persona: ['隐藏人设', '班级角色', '专属气质'],
     food: ['干饭属性', '快乐补给', '校园能量'],
@@ -239,6 +330,7 @@ function buildSummary(result, theme, profile) {
     return '「' + title + '」' + profile.lead + desc
   }
   var prefixMap = {
+    consume: '这份报告会把你的消费选择翻译成具体的决策风格，而不是一句完成提示。',
     daily: '这不是一句简单评价，而是一张属于你今天的校园状态卡。',
     persona: '这个结果把你在校园里的一个高辨识度侧面放大了出来。',
     food: '你的选择透露出一种很有画面感的校园补给方式。',
@@ -281,6 +373,7 @@ function buildTraitBars(result, theme, profile) {
   var questionCount = result.questionCount || 5
   var base = clamp(Math.round((score / Math.max(questionCount * 4, 1)) * 100), 28, 96)
   var configs = {
+    consume: ['预算控制', '体验追求', '冲动购买'],
     daily: ['在线感', '松弛度', '行动力'],
     persona: ['辨识度', '稳定感', '反差感'],
     food: ['快乐补给', '分享欲', '续航力'],
@@ -300,6 +393,7 @@ function buildActionList(result, theme, profile) {
   if (profile && profile.actions && profile.actions.length === 3) return profile.actions
   var suggestion = result.resultSuggestion || buildSuggestion(result)
   var actions = {
+    consume: [action('🧾', '先把想买的东西分成刚需、改善、冲动三类。'), action('🛒', suggestion), action('⏳', '非刚需消费先等 24 小时再决定。')],
     daily: [action('☀️', '给今天选一个最想完成的小目标。'), action('🍬', suggestion), action('📌', '晚上回看一下：今天哪一刻最像这个结果？')],
     persona: [action('📸', '把这个结果当作今天的人设卡保存下来。'), action('💬', '找同桌/朋友问问：他们觉得像不像？'), action('✨', suggestion)],
     food: [action('🧋', '给自己安排一个不超预算的小补给。'), action('🍚', '认真吃一顿饭，别只靠零食续命。'), action('🌈', suggestion)],
@@ -310,6 +404,38 @@ function buildActionList(result, theme, profile) {
   return actions[theme.key] || actions.general
 }
 
+function buildReasonList(result, profile) {
+  var answerSummary = result.answerSummary || []
+  var list = []
+  for (var i = 0; i < answerSummary.length && list.length < 3; i++) {
+    var item = answerSummary[i] || {}
+    if (item.selectedText) list.push('你在「' + (item.question || '这道题') + '」中选择了“' + item.selectedText + '”，这是结果判断的重要线索。')
+  }
+  if (list.length) return list
+  if (profile && profile.cards && profile.cards[1]) return [profile.cards[1].text]
+  return ['系统会结合你的题目选择、分数区间和测试主题生成结果，而不是只显示“测试完成”。']
+}
+
+function buildStrengthList(result, profile) {
+  var text = [result.testTitle || '', result.category || '', result.resultTitle || ''].join('')
+  if (includesAny(text, ['消费', '购物', '预算', '消费者'])) {
+    return ['能根据需求和预算做取舍', '对价格、体验和实用性有自己的判断', '比单纯跟风更容易买到适合自己的东西']
+  }
+  if (profile && profile.cards && profile.cards[0]) return [profile.cards[0].text, '这个结果来自你的具体选择组合，不是单纯完成提示。']
+  return ['能从选择里看见自己的偏好', '适合把结果当作今天的轻量参考']
+}
+
+function buildRiskList(result, profile) {
+  var text = [result.testTitle || '', result.category || '', result.resultTitle || ''].join('')
+  if (includesAny(text, ['消费', '购物', '预算', '消费者'])) {
+    if (includesAny(text, ['悦己', '体验'])) return ['连续被种草时容易超出预算，建议先冷静 24 小时。']
+    if (includesAny(text, ['精打细算', '预算'])) return ['过度比较可能让你错过真正提升体验的选择。']
+    return ['容易在“想要”和“该省”之间纠结，提前设预算会更轻松。']
+  }
+  if (profile && profile.cards && profile.cards[2]) return [profile.cards[2].text]
+  return ['结果只是娱乐参考，不需要把它当作固定标签。']
+}
+
 function normalizeResult(result) {
   var data = result || {}
   var normalized = {}
@@ -318,21 +444,39 @@ function normalizeResult(result) {
   }
   normalized.resultTitle = normalized.resultTitle || '你的校园趣测结果已生成'
   normalized.resultEmoji = normalized.resultEmoji || '🌟'
-  normalized.resultDesc = normalized.resultDesc || buildFallbackDesc(normalized)
-  normalized.resultSuggestion = normalized.resultSuggestion || buildSuggestion(normalized)
   normalized.testTitle = normalized.testTitle || '校园趣测'
   normalized.score = typeof normalized.score === 'number' ? normalized.score : parseInt(normalized.score || 0, 10) || 0
   normalized.questionCount = normalized.questionCount || 0
 
+  var generatedProfile = null
+  if (isGenericResultTitle(normalized.resultTitle) || isGenericDescription(normalized.resultDesc)) {
+    generatedProfile = buildGenericProfile(normalized)
+    if (generatedProfile) {
+      normalized.resultTitle = generatedProfile.title
+      normalized.resultEmoji = generatedProfile.emoji || normalized.resultEmoji
+      normalized.resultDesc = generatedProfile.lead
+      normalized.dominantTrait = generatedProfile.dominantTrait || ''
+      normalized.matchPercent = generatedProfile.matchPercent || scoreRatio(normalized)
+    }
+  }
+
+  normalized.resultDesc = normalized.resultDesc || buildFallbackDesc(normalized)
+  normalized.resultSuggestion = normalized.resultSuggestion || buildSuggestion(normalized)
+  normalized.matchPercent = typeof normalized.matchPercent === 'number' ? normalized.matchPercent : scoreRatio(normalized)
+  normalized.dominantTrait = normalized.dominantTrait || domainLabel(inferDomain(normalized))
+
   var theme = detectTheme(normalized)
-  var profile = getProfile(normalized.resultTitle)
+  var profile = generatedProfile || getProfile(normalized.resultTitle)
   normalized.resultTheme = theme
   normalized.resultTags = buildTags(theme, normalized, profile)
   normalized.summaryText = buildSummary(normalized, theme, profile)
   normalized.insightCards = buildInsightCards(normalized, theme, profile)
   normalized.traitBars = buildTraitBars(normalized, theme, profile)
   normalized.actionList = buildActionList(normalized, theme, profile)
-  normalized.shareLine = (profile && profile.share) || ('我的结果是「' + normalized.resultTitle + '」，这张校园状态卡有点准。')
+  normalized.reasonList = buildReasonList(normalized, profile)
+  normalized.strengthList = buildStrengthList(normalized, profile)
+  normalized.riskList = buildRiskList(normalized, profile)
+  normalized.shareLine = (profile && profile.share) || ('我的结果是「' + normalized.resultTitle + '」，这张测试报告能看到具体倾向。')
   return normalized
 }
 

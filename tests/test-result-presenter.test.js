@@ -65,10 +65,40 @@ run('different score results in the same status test produce different matched r
   assert.ok(high.summaryText.indexOf('输出') >= 0 || high.summaryText.indexOf('推进') >= 0)
 })
 
+run('generic completion title in consumption test is converted into a useful matched result', function () {
+  var result = presenter.normalizeResult({
+    testTitle: '消费风格测试',
+    category: '消费风格',
+    resultTitle: '测试完成',
+    resultDesc: '感谢你的参与，你已完成本次测试。',
+    resultEmoji: '⭐',
+    score: 11,
+    questionCount: 5,
+    answerSummary: [
+      { question: '促销时你会怎么做？', selectedText: '先看是否真的需要', score: 2 },
+      { question: '朋友种草时你会怎么做？', selectedText: '先比较价格和评价', score: 2 }
+    ]
+  })
+
+  assert.notStrictEqual(result.resultTitle, '测试完成')
+  assert.ok(result.resultTitle.indexOf('消费者') >= 0 || result.resultTitle.indexOf('消费') >= 0)
+  assert.ok(result.shareLine.indexOf('测试完成') === -1)
+  assert.ok(result.resultTags.indexOf('测试完成') === -1)
+  assert.ok(result.summaryText.indexOf('感谢你的参与') === -1)
+  assert.ok(result.summaryText.indexOf('消费') >= 0)
+  assert.ok(result.reasonList.length >= 2)
+  assert.ok(result.strengthList.length >= 2)
+  assert.ok(result.riskList.length >= 1)
+  assert.ok(result.dominantTrait)
+  assert.ok(result.matchPercent >= 0 && result.matchPercent <= 100)
+})
+
 run('missing raw result fields still produce safe fallback report', function () {
   var result = presenter.normalizeResult({})
   assert.strictEqual(result.resultTitle, '你的校园趣测结果已生成')
   assert.ok(result.summaryText)
   assert.ok(result.resultTags.length >= 3)
   assert.strictEqual(result.score, 0)
+  assert.notStrictEqual(result.dominantTrait, 'general')
+  assert.ok(result.dominantTrait)
 })

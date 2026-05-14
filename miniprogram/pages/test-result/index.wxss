@@ -96,6 +96,7 @@
   box-shadow: 0 26rpx 70rpx rgba(183, 125, 255, 0.28);
 }
 
+.theme-consume .report-hero { background: linear-gradient(135deg, #ffb86b 0%, #ff8fab 48%, #8f75ff 100%); }
 .theme-food .report-hero { background: linear-gradient(135deg, #ffb76b 0%, #ff7eb3 52%, #c08bff 100%); }
 .theme-social .report-hero { background: linear-gradient(135deg, #7bdff2 0%, #b2f7ef 38%, #b388ff 100%); }
 .theme-recharge .report-hero { background: linear-gradient(135deg, #b8f7d4 0%, #80d0ff 46%, #a890ff 100%); }
@@ -447,6 +448,88 @@
 .trait-fill.pink { background: linear-gradient(90deg, #ff8fbd, #ff6cae); }
 .trait-fill.purple { background: linear-gradient(90deg, #c8a5ff, #8f75ff); }
 .trait-fill.blue { background: linear-gradient(90deg, #8fe3ff, #6ca8ff); }
+
+/* Evidence and compare */
+.evidence-list {
+  display: flex;
+  flex-direction: column;
+  gap: 16rpx;
+}
+
+.evidence-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 14rpx;
+  padding: 20rpx 22rpx;
+  border-radius: 22rpx;
+  background: #f8f4ff;
+  border: 1rpx solid #eee5ff;
+}
+
+.evidence-dot {
+  color: #8f75ff;
+  font-size: 22rpx;
+  line-height: 1.7;
+}
+
+.evidence-text {
+  flex: 1;
+  color: #65566e;
+  font-size: 25rpx;
+  line-height: 1.68;
+  font-weight: 600;
+}
+
+.compare-grid {
+  display: flex;
+  gap: 18rpx;
+}
+
+.compare-box {
+  flex: 1;
+  min-width: 0;
+  padding: 24rpx 22rpx;
+  border-radius: 26rpx;
+}
+
+.compare-box.good {
+  background: linear-gradient(180deg, #f3fff9, #ffffff);
+  border: 1rpx solid #dff7ec;
+}
+
+.compare-box.warn {
+  background: linear-gradient(180deg, #fff8f0, #ffffff);
+  border: 1rpx solid #ffe8cc;
+}
+
+.compare-title {
+  display: block;
+  font-size: 27rpx;
+  font-weight: 900;
+  color: #44304f;
+  margin-bottom: 14rpx;
+}
+
+.compare-row {
+  position: relative;
+  display: block;
+  padding-left: 22rpx;
+  margin-top: 12rpx;
+  font-size: 24rpx;
+  line-height: 1.55;
+  color: #6a5a73;
+}
+
+.compare-row::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 15rpx;
+  width: 8rpx;
+  height: 8rpx;
+  border-radius: 50%;
+  background: #ff8fbd;
+}
 
 /* Action plan */
 .action-list {

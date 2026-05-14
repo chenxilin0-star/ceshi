@@ -85,6 +85,24 @@ Page({
     })
   },
 
+  buildAnswerSummary: function () {
+    var questions = this.data.questions || []
+    var answers = this.data.answers || []
+    var summary = []
+    for (var i = 0; i < questions.length; i++) {
+      var q = questions[i] || {}
+      var idx = answers[i]
+      var option = q.options && q.options[idx] ? q.options[idx] : null
+      summary.push({
+        question: q.title || q.question || ('第' + (i + 1) + '题'),
+        selectedText: option ? (option.text || option.label || '') : '',
+        score: option ? (option.score || 0) : 0,
+        dimension: option ? (option.dimension || '') : ''
+      })
+    }
+    return summary
+  },
+
   // 提交测试（只传 testId 和 answers，服务端计算分数和结果）
   submitTest: function () {
     var that = this
@@ -120,6 +138,7 @@ Page({
           resultDesc: res.resultDesc,
           resultEmoji: res.resultEmoji || '',
           questionCount: res.questionCount || that.data.questions.length,
+          answerSummary: that.buildAnswerSummary(),
           createTime: new Date().toISOString()
         }
         wx.redirectTo({

@@ -26,7 +26,7 @@
       <view class="avatar-orb">
         <text class="result-badge">{{result.resultEmoji || '🌟'}}</text>
       </view>
-      <text class="hero-kicker">你的本次测试结果是</text>
+      <text class="hero-kicker">你的{{result.testTitle}}结果是</text>
       <text class="result-title">{{result.resultTitle}}</text>
       <text class="share-line">{{result.shareLine}}</text>
       <view class="tag-row">
@@ -37,18 +37,18 @@
     <!-- Snapshot card -->
     <view class="snapshot-card">
       <view class="snapshot-item main-score">
-        <text class="snapshot-num">{{result.score}}</text>
-        <text class="snapshot-label">匹配指数</text>
+        <text class="snapshot-num">{{result.matchPercent}}</text>
+        <text class="snapshot-label">结果匹配度%</text>
       </view>
       <view class="snapshot-divider"></view>
       <view class="snapshot-item">
         <text class="snapshot-num small">{{result.questionCount || '-'}}</text>
-        <text class="snapshot-label">答题线索</text>
+        <text class="snapshot-label">答题题数</text>
       </view>
       <view class="snapshot-divider"></view>
       <view class="snapshot-item wide">
-        <text class="snapshot-name">{{result.testTitle}}</text>
-        <text class="snapshot-label">测试来源</text>
+        <text class="snapshot-name">{{result.dominantTrait}}</text>
+        <text class="snapshot-label">主导特征</text>
       </view>
     </view>
 
@@ -69,7 +69,7 @@
       <view class="section-head compact">
         <view>
           <text class="section-kicker">REPORT 02</text>
-          <text class="section-title">你的三个隐藏线索</text>
+          <text class="section-title">为什么会是这个结果</text>
         </view>
       </view>
       <view class="insight-list">
@@ -79,6 +79,21 @@
             <text class="insight-title">{{item.title}}</text>
             <text class="insight-text">{{item.text}}</text>
           </view>
+        </view>
+      </view>
+    </view>
+
+    <view class="report-card evidence-card" wx:if="{{result.reasonList && result.reasonList.length}}">
+      <view class="section-head compact">
+        <view>
+          <text class="section-kicker">EVIDENCE</text>
+          <text class="section-title">选择线索</text>
+        </view>
+      </view>
+      <view class="evidence-list">
+        <view class="evidence-item" wx:for="{{result.reasonList}}" wx:key="*this">
+          <text class="evidence-dot">●</text>
+          <text class="evidence-text">{{item}}</text>
         </view>
       </view>
     </view>
@@ -105,11 +120,31 @@
     </view>
 
     <!-- Actions -->
-    <view class="report-card action-plan-card">
+    <view class="report-card compare-card">
       <view class="section-head compact">
         <view>
           <text class="section-kicker">REPORT 04</text>
-          <text class="section-title">今日可执行小任务</text>
+          <text class="section-title">你的优势与提醒</text>
+        </view>
+      </view>
+      <view class="compare-grid">
+        <view class="compare-box good">
+          <text class="compare-title">优势</text>
+          <view class="compare-row" wx:for="{{result.strengthList}}" wx:key="*this">{{item}}</view>
+        </view>
+        <view class="compare-box warn">
+          <text class="compare-title">注意</text>
+          <view class="compare-row" wx:for="{{result.riskList}}" wx:key="*this">{{item}}</view>
+        </view>
+      </view>
+    </view>
+
+    <!-- Actions -->
+    <view class="report-card action-plan-card">
+      <view class="section-head compact">
+        <view>
+          <text class="section-kicker">REPORT 05</text>
+          <text class="section-title">可执行建议</text>
         </view>
         <text class="section-icon">💡</text>
       </view>

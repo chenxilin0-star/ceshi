@@ -28,12 +28,46 @@ Page({
     }
   },
 
+  buildAnswerSummaryFromDetail: function (result, detail) {
+    var questions = (detail && detail.questions) || []
+    var answers = (result && result.answers) || []
+    var summary = []
+    for (var i = 0; i < questions.length; i++) {
+      var q = questions[i] || {}
+      var idx = answers[i]
+      var option = q.options && q.options[idx] ? q.options[idx] : null
+      summary.push({
+        question: q.title || q.question || ('第' + (i + 1) + '题'),
+        selectedText: option ? (option.text || option.label || '') : '',
+        score: option ? (option.score || 0) : 0,
+        dimension: option ? (option.dimension || '') : ''
+      })
+    }
+    return summary
+  },
+
   loadResult: function (resultId) {
     var that = this
     var db = wx.cloud.database()
     db.collection('results').doc(resultId).get().then(function (res) {
+      var rawResult = res.data || {}
+      if (rawResult.testId && rawResult.answers && !rawResult.answerSummary) {
+        util.callFunction('getTestDetail', { testId: rawResult.testId }).then(function (detailRes) {
+          if (detailRes.code === 0) rawResult.answerSummary = that.buildAnswerSummaryFromDetail(rawResult, detailRes.data)
+          that.setData({
+            result: normalizeResult(rawResult),
+            loading: false
+          })
+        }).catch(function () {
+          that.setData({
+            result: normalizeResult(rawResult),
+            loading: false
+          })
+        })
+        return
+      }
       that.setData({
-        result: normalizeResult(res.data),
+        result: normalizeResult(rawResult),
         loading: false
       })
     }).catch(function (err) {
