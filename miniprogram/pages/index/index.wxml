@@ -46,7 +46,7 @@
     <view class="section">
       <view class="section-header home-section-header">
         <view>
-          <text class="section-kicker">6 个频道</text>
+          <text class="section-kicker">5 个频道</text>
           <text class="section-title">今天想测点什么？</text>
         </view>
         <text class="section-action">轻松一点</text>
@@ -60,25 +60,6 @@
           </view>
           <text class="category-title">{{item.title}}</text>
           <text class="category-subtitle">{{item.subtitle}}</text>
-        </view>
-      </view>
-    </view>
-
-    <view class="section task-section">
-      <view class="section-header home-section-header">
-        <view>
-          <text class="section-kicker">每日小任务</text>
-          <text class="section-title">不用很努力，也能攒点能量</text>
-        </view>
-      </view>
-      <view class="task-list">
-        <view class="task-card" wx:for="{{dailyTasks}}" wx:key="title" bindtap="goTaskAction">
-          <text class="task-emoji">{{item.emoji}}</text>
-          <view class="task-info">
-            <text class="task-title">{{item.title}}</text>
-            <text class="task-desc">{{item.desc}}</text>
-          </view>
-          <text class="task-reward">{{item.rewardText}}</text>
         </view>
       </view>
     </view>

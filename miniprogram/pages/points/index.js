@@ -73,12 +73,13 @@ Page({
 
   doTakePhoto: function () {
     var that = this
-    wx.chooseImage({
+    wx.chooseMedia({
       count: 1,
+      mediaType: ['image'],
+      sourceType: ['camera', 'album'],
       sizeType: ['compressed'],
-      sourceType: ['camera'],
       success: function (res) {
-        var tempFilePath = res.tempFilePaths[0]
+        var tempFilePath = res.tempFiles[0].tempFilePath
         that.setData({
           tempFilePath: tempFilePath,
           ocrResult: null

@@ -15,8 +15,8 @@
     <!-- 未选择照片时显示选择按钮 -->
     <view class="camera-area" wx:if="{{!tempFilePath}}" bindtap="takePhoto">
       <text class="camera-icon">📷</text>
-      <text class="camera-text">拍摄账单详情原图</text>
-      <text class="camera-sub">仅支持现场拍摄“全部账单/账单详情”页面，金额需在5-100元</text>
+      <text class="camera-text">拍摄或选择账单详情原图</text>
+      <text class="camera-sub">支持拍照或从相册选择"全部账单/账单详情"页面，金额需在5-100元</text>
     </view>
 
     <!-- 已拍照显示预览 -->
@@ -41,38 +41,20 @@
 
       <view class="result-field">
         <text class="field-label">商品</text>
-        <text class="field-value {{ocrResult.parsed.product ? '' : 'field-error'}}">{{ocrResult.parsed.product || '未识别'}}</text>
-      </view>
-      <view class="result-field">
-        <text class="field-label">支付状态</text>
-        <text class="field-value {{ocrResult.parsed.status === '支付成功' ? '' : 'field-error'}}">{{ocrResult.parsed.status || '未识别'}}</text>
-      </view>
-      <view class="result-field">
-        <text class="field-label">支付时间</text>
-        <text class="field-value {{ocrResult.parsed.payTime ? '' : 'field-error'}}">{{ocrResult.parsed.payTime || '未识别'}}</text>
-      </view>
-      <view class="result-field">
-        <text class="field-label">商户</text>
-        <text class="field-value {{ocrResult.parsed.placeName === '学府美食城' ? '' : 'field-error'}}">{{ocrResult.parsed.placeName || '未识别'}}</text>
+        <text class="field-value">{{ocrResult.parsed.product || '未识别'}}</text>
       </view>
       <view class="result-field">
         <text class="field-label">消费金额</text>
-        <text class="field-value {{ocrResult.parsed.amount >= 5 && ocrResult.parsed.amount <= 100 ? '' : 'field-error'}}">¥{{ocrResult.parsed.amount || '0.00'}}</text>
+        <text class="field-value">¥{{ocrResult.parsed.amount || '0.00'}}</text>
       </view>
       <view class="result-field">
-        <text class="field-label">收单机构</text>
-        <text class="field-value {{ocrResult.parsed.acquirer ? '' : 'field-error'}}">{{ocrResult.parsed.acquirer || '未识别'}}</text>
+        <text class="field-label">支付时间</text>
+        <text class="field-value">{{ocrResult.parsed.payTime || '未识别'}}</text>
       </view>
 
       <!-- 预计获得积分 -->
       <view class="points-preview" wx:if="{{ocrResult.parsed.valid}}">
         预计获得 <text class="points-num">{{f.formatPoints(ocrResult.parsed.pointsPreview)}}</text> 积分
-      </view>
-
-      <!-- 验证错误信息 -->
-      <view class="result-errors" wx:if="{{ocrResult.parsed.errors.length > 0}}">
-        <text class="error-title">未通过项：</text>
-        <text class="error-item" wx:for="{{ocrResult.parsed.errors}}" wx:key="index">• {{item}}</text>
       </view>
 
       <!-- 操作按钮 -->

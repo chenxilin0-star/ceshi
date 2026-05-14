@@ -121,8 +121,7 @@
 .today-card:active,
 .category-card:active,
 .test-card:active,
-.quick-action:active,
-.task-card:active {
+.quick-action:active {
   transform: scale(0.98);
   opacity: 0.92;
 }
@@ -362,72 +361,7 @@
 .theme-food { background: linear-gradient(135deg, #FFB74D, #FF7EB3); }
 .theme-recharge { background: linear-gradient(135deg, #69DBAF, #4D96FF); }
 .theme-friends { background: linear-gradient(135deg, #6EA8FF, #B388FF); }
-.theme-task { background: linear-gradient(135deg, #FFD166, #FF8A65); }
 .theme-other { background: linear-gradient(135deg, #B388FF, #FF7EB3); }
-
-.task-section {
-  padding: 26rpx;
-  border-radius: 34rpx;
-  background: #FFFFFF;
-  box-shadow: 0 8rpx 30rpx rgba(127, 86, 217, 0.08);
-}
-
-.task-list {
-  display: flex;
-  flex-direction: column;
-  gap: 16rpx;
-}
-
-.task-card {
-  display: flex;
-  align-items: center;
-  gap: 18rpx;
-  padding: 20rpx;
-  border-radius: 24rpx;
-  background: #FBF7FF;
-  border: 1rpx solid #F1E8FF;
-}
-
-.task-emoji {
-  width: 64rpx;
-  height: 64rpx;
-  flex-shrink: 0;
-  border-radius: 22rpx;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background: #FFFFFF;
-  font-size: 34rpx;
-}
-
-.task-info {
-  flex: 1;
-  min-width: 0;
-}
-
-.task-title {
-  display: block;
-  color: #332A3D;
-  font-size: 28rpx;
-  font-weight: 800;
-}
-
-.task-desc {
-  display: block;
-  margin-top: 4rpx;
-  color: #8D7E98;
-  font-size: 22rpx;
-}
-
-.task-reward {
-  flex-shrink: 0;
-  padding: 8rpx 14rpx;
-  border-radius: 999rpx;
-  background: #FFF8EE;
-  color: #FF9F1C;
-  font-size: 21rpx;
-  font-weight: 800;
-}
 
 .test-list {
   display: flex;

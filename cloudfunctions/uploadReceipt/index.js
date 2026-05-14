@@ -45,6 +45,15 @@ exports.main = async (event, context) => {
   if (!/^\d{4}年\d{1,2}月\d{1,2}日\s+\d{1,2}:\d{2}:\d{2}$/.test(normalizedPayTime)) {
     return { code: -2, msg: '支付时间格式不正确' }
   }
+  // 校验支付时间必须在2026年5月之后
+  var timeMatch = normalizedPayTime.match(/^(\d{4})年(\d{1,2})月/)
+  if (timeMatch) {
+    var payYear = parseInt(timeMatch[1], 10)
+    var payMonth = parseInt(timeMatch[2], 10)
+    if (payYear < 2026 || (payYear === 2026 && payMonth < 5)) {
+      return { code: -2, msg: '仅支持2026年5月之后的消费记录' }
+    }
+  }
 
   // 1. 查询用户
   const userRes = await db.collection('users').where({ _openid: OPENID }).get()

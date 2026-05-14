@@ -46,21 +46,6 @@ var CAMPUS_CATEGORIES = [
     themeClass: 'theme-friends',
     keywords: ['朋友', '同桌', '群聊', '搭子', '社交']
   },
-  {
-    key: 'task',
-    title: '每日小任务',
-    subtitle: '轻松拿一点星球能量',
-    emoji: '⭐',
-    tag: '积分感',
-    themeClass: 'theme-task',
-    keywords: ['任务', '积分', '打卡', '挑战']
-  }
-]
-
-var DAILY_TASKS = [
-  { emoji: '💧', title: '喝一瓶水', desc: '先让自己回血一点', rewardText: '+1 能量' },
-  { emoji: '⏱', title: '做个 5 分钟小目标', desc: '不用很努力，动一下就行', rewardText: '+3 能量' },
-  { emoji: '🤝', title: '给朋友一句鼓励', desc: '今天也当一次气氛组', rewardText: '+2 能量' }
 ]
 
 function getSafeText(value) {
@@ -147,7 +132,6 @@ Page({
     loading: true,
     userInfo: null,
     campusCategories: CAMPUS_CATEGORIES,
-    dailyTasks: DAILY_TASKS,
     featuredTest: null,
     todayCard: {
       title: '生成我的今日身份',
@@ -234,10 +218,6 @@ Page({
       return
     }
     this.openTest(test._id)
-  },
-
-  goTaskAction: function () {
-    wx.showToast({ title: '完成测试或消费可获得积分', icon: 'none' })
   },
 
   goTest: function (e) {

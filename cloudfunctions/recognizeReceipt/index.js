@@ -92,8 +92,9 @@ exports.main = async (event, context) => {
           { type: 'text', text: prompt }
         ]
       }],
-      temperature: 0,
-      max_tokens: 1600
+      temperature: 0.01,
+      top_p: 0.6,
+      max_tokens: 1024
     })
 
     if (response.statusCode !== 200) {
@@ -101,6 +102,7 @@ exports.main = async (event, context) => {
       if (response.data && response.data.error) {
         errMsg += ': ' + (response.data.error.message || JSON.stringify(response.data.error))
       }
+      console.error('ZhiPu API error:', response.statusCode, JSON.stringify(response.data).substring(0, 500))
       return { code: -2, msg: errMsg }
     }
 
@@ -172,6 +174,16 @@ exports.main = async (event, context) => {
     }
     if (!/^\d{4}年\d{1,2}月\d{1,2}日\s+\d{1,2}:\d{2}:\d{2}$/.test(parsed.payTime)) {
       errors.push('支付时间格式不正确')
+    } else {
+      // 校验支付时间必须在2026年5月之后
+      var timeMatch = parsed.payTime.match(/^(\d{4})年(\d{1,2})月/)
+      if (timeMatch) {
+        var payYear = parseInt(timeMatch[1], 10)
+        var payMonth = parseInt(timeMatch[2], 10)
+        if (payYear < 2026 || (payYear === 2026 && payMonth < 5)) {
+          errors.push('仅支持2026年5月之后的消费记录')
+        }
+      }
     }
     if (ALLOWED_PRODUCTS.indexOf(parsed.product) === -1) {
       errors.push('商品名称需为 B-8号档口 或 B-7号档口')
