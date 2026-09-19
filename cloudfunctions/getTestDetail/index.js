@@ -28,7 +28,7 @@ exports.main = async (event, context) => {
       }
       cleanQuestions.push({
         _id: q._id,
-        text: q.text,
+        text: q.text || q.question || '',
         options: cleanOptions
       })
     }

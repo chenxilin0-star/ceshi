@@ -1,0 +1,9 @@
+{
+  "name": "getStats",
+  "version": "1.0.0",
+  "description": "商家端用户活跃度统计",
+  "main": "index.js",
+  "dependencies": {
+    "wx-server-sdk": "~2.6.3"
+  }
+}

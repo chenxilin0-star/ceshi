@@ -1,0 +1,9 @@
+{
+  "name": "analyzeFace",
+  "version": "1.0.0",
+  "description": "调用自建 face-api 面部分析服务识别性别/年龄/表情/氛围分",
+  "main": "index.js",
+  "dependencies": {
+    "wx-server-sdk": "~2.6.3"
+  }
+}

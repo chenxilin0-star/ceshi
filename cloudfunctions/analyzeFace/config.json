@@ -1,0 +1,6 @@
+{
+  "timeout": 30,
+  "envVariables": {
+    "FACE_API_URL": "http://43.156.130.103:8002/v1/face"
+  }
+}
