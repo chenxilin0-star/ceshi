@@ -1,7 +1,7 @@
 {
   "name": "recognizeReceipt",
   "version": "1.0.0",
-  "description": "使用智谱GLM-4V-Flash识别小票图片",
+  "description": "调用自建 PaddleOCR 识别微信支付账单图片",
   "main": "index.js",
   "dependencies": {
     "wx-server-sdk": "~2.6.3"

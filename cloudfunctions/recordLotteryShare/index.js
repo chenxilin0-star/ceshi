@@ -28,6 +28,7 @@ exports.main = async (event, context) => {
   if (existing.length < 2) {
     await db.collection('lotteryShareChances').add({
       data: {
+        _openid: OPENID,
         source: event && event.scene ? event.scene : 'share_menu',
         createTime: db.serverDate()
       }

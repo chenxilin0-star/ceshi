@@ -17,16 +17,11 @@ exports.main = async (event, context) => {
   var userRes = await db.collection('users').where({ _openid: OPENID }).get()
 
   if (userRes.data.length === 0) {
-    // Generate unique referral code
     var referralCode = generateShortCode(6)
     var codeExists = true
     while (codeExists) {
       var check = await db.collection('users').where({ referralCode: referralCode }).get()
-      if (check.data.length === 0) {
-        codeExists = false
-      } else {
-        referralCode = generateShortCode(6)
-      }
+      if (check.data.length === 0) { codeExists = false } else { referralCode = generateShortCode(6) }
     }
 
     var now = new Date().toISOString()
@@ -40,6 +35,7 @@ exports.main = async (event, context) => {
         referrerId: '',
         referralCode: referralCode,
         createTime: now,
+        lastActiveAt: now,
         updateTime: now
       }
     })
@@ -60,6 +56,11 @@ exports.main = async (event, context) => {
   }
 
   var user = userRes.data[0]
+  try {
+    await db.collection('users').doc(user._id).update({
+      data: { lastActiveAt: new Date().toISOString() }
+    })
+  } catch (e) {}
   return {
     code: 0,
     user: {

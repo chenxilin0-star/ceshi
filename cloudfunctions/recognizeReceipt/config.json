@@ -1,3 +1,6 @@
 {
-  "timeout": 30
+  "timeout": 60,
+  "envVariables": {
+    "PADDLE_OCR_URL": "http://43.156.130.103:8001/v1/ocr"
+  }
 }
